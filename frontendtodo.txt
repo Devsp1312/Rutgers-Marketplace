@@ -1,0 +1,12 @@
+Webpages Needed for front end:
+- Main page
+    -All the selling items will be listed here
+    -search bar
+    -filters
+    -Account view button/Messages button
+    -About us summary "button"
+- Individual item page
+    - click on an item and it brings you to a page
+    - image, image description, price box, contact seller button
+- Account page
+    - 
