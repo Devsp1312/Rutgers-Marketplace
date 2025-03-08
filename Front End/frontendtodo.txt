@@ -9,4 +9,12 @@ Webpages Needed for front end:
     - click on an item and it brings you to a page
     - image, image description, price box, contact seller button, google calender integration
 - Account page
-    - 
+    - messages view button, 
+    - display profile information 
+    - active listings if youre a seller 
+    - save for later
+
+- Admin page
+    - view/edit users
+    - view/edit postings
+    - report listings
