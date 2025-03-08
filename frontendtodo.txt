@@ -7,6 +7,6 @@ Webpages Needed for front end:
     -About us summary "button"
 - Individual item page
     - click on an item and it brings you to a page
-    - image, image description, price box, contact seller button
+    - image, image description, price box, contact seller button, google calender integration
 - Account page
     - 
