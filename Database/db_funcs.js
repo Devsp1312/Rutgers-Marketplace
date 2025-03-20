@@ -64,11 +64,11 @@ const UserSchema = new Schema({
 const Listing = mongoose.model('Listing', ListingSchema);
 const User = mongoose.model('User', UserSchema);
 
-async function addUser(name) {
+async function addUser(name, reviews=[], listings=[]) {
     const newUser = new User({
       Name: name,
-      Reviews: [],
-      Listings: []
+      Reviews: reviews,
+      Listings: listings
     });
   
     try {
