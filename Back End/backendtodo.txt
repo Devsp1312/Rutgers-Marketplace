@@ -1,1 +1,12 @@
-look at this after finishing front end
+Need to make a library to work with MongoDB
+
+Database Functions:
+    - Adding a listing 
+    - Retrieving a listing info
+    - Filtering the Listings
+    - Adding a USER
+    - Retrieving USER info
+
+API Configuration:
+    - NETid Login
+    - Google calendar API
