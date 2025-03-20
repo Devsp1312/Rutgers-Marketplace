@@ -1,1 +1,11 @@
-look 
+User Database:
+    - Name/ID
+    - Sold Listings
+    - Time on Website
+
+Listings Database:
+    - Name
+    - Description
+    - Images
+    - Price
+    - Seller ID

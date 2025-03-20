@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <!-- Navbar -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4><a class="home-button" href="home.html">Marketplace</a></h4>
+            <input type="text" class="form-control w-50" placeholder="Search...">
+            <button class="btn btn-outline-secondary">Filter</button>
+            
+            <!-- Profile Dropdown -->
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Profile
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">Account Settings</a></li>
+                    <li><a class="dropdown-item" href="#">Wishlist</a></li>
+                    <li><a class="dropdown-item" href="#">Messages</a></li>
+                    <li><a class="dropdown-item" href="#">Sell Product</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Product Grid -->
+        <div class="row" id="product-grid">
+            <!-- Placeholder Products -->
+            <div class="col-md-4 mb-4" >
+                <div class="card">
+                    <div class="card-body text-center">
+                        <p class="card-text">Placeholder Product</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <p class="card-text">Placeholder Product</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <p class="card-text">Placeholder Product</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
