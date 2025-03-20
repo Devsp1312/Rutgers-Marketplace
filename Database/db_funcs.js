@@ -150,7 +150,7 @@ async function changeListingImages(listing_id, newImages) {
     console.log(`Images changed for listing: ${listing_id}`);
 }
 
-modules.export = {
+module.exports = {
     connectToDB,
     addUser,
     getUser,

@@ -62,7 +62,7 @@
      - `listing_id` (String): The unique ID of the listing to update.
      - `newTitle` (String): The new title for the listing.
    - **Outputs**:
-     - **Console Log**: Logs `Title changed for listing: {listing_id}` if the title is updated successfully.
+     - **Console Log**: Logs `Title changed for listing: {listing_id}` if the title is updated successfully.    
 
 10. **changeListingImages(listing_id, newImages)**
     - **Inputs**:
