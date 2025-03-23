@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Product Details</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <style>
+    .product-img {
+      width: 100%;
+      max-width: 450px;
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .price {
+      font-size: 1.8rem;
+      color: #28a745;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-5">
+    <div class="row g-5 align-items-start">
+      <!-- Image Section -->
+      <div class="col-md-6 text-center">
+        <img id="product-image" src="" alt="Product Image" class="product-img"/>
+      </div>
+
+      <!-- Info Section -->
+      <div class="col-md-6">
+        <h2 id="product-title">Loading...</h2>
+        <p id="product-description"></p>
+        <div class="price" id="product-price"></div>
+
+        <!-- Schedule Meeting Button -->
+        <button class="btn btn-primary mt-3" onclick="scheduleMeeting()">Schedule Meeting</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Get product data from query string
+    const params = new URLSearchParams(window.location.search);
+    const title = params.get("title");
+    const description = params.get("description");
+    const price = params.get("price");
+    const image = params.get("image");
+
+    // Fill the product content
+    document.getElementById("product-title").textContent = title;
+    document.getElementById("product-description").textContent = description;
+    document.getElementById("product-price").textContent = `$${price}`;
+    document.getElementById("product-image").src = image;
+
+    // Placeholder - later replaced with real backend call
+    function scheduleMeeting() {
+      alert(`Scheduling meeting for "${title}" — this will use Google Calendar API in production.`);
+    }
+  </script>
+</body>
+</html>
