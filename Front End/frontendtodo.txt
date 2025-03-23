@@ -18,3 +18,21 @@ Webpages Needed for front end:
     - view/edit users
     - view/edit postings
     - report listings
+
+NO HTML FOR DYMANIC CONTENT
+
+- Need to structure front end
+    - need components folder
+        - need to craete main component for all items to sell
+    - need assets folder (photos, logos, fonts, any static design elements)
+    - pages folder
+        - authentication page
+            - need to create pseudo database of users and passwords
+        - main page (pagination)
+            - displays all items that are currently being sold
+        - individuial item page
+            - displays individal prodcut when clicked on, also person whos selling it
+        - admin page
+            - displays all users/errors/reports
+        - profile page
+            - where users can update their own user profile
