@@ -2,137 +2,335 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Marketplace</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <link rel="stylesheet" href="styles.css">
+  <link 
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" 
+    rel="stylesheet"
+  />
+  <style>
+    body {
+      background-color: #e1dfd2;
+      margin: 0;
+      padding: 0;
+    }
+    .navbar-custom {
+      background-color: #393b3f; /* Gray */
+    }
+    .navbar-custom .navbar-brand,
+    .navbar-custom .nav-link,
+    .navbar-custom .dropdown-toggle,
+    .navbar-custom .btn {
+      color: #fff !important;
+    }
+    /* Outline style for Filter on gray */
+    .navbar-custom .btn-outline-light {
+      border-color: #fff;
+      color: #fff;
+    }
+    .navbar-custom .btn-outline-light:hover {
+      background-color: #fff;
+      color: #393b3f;
+    }
+
+    /* Single user icon button for dropdown */
+    .user-icon-btn {
+      background: transparent;
+      border: none;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px; /* space between icon and greeting */
+    }
+    .user-icon-btn:hover {
+      background-color: rgba(255,255,255,0.2);
+    }
+
+    .user-icon-btn img {
+      height: 32px;
+      width: auto;
+    }
+
+    /* Greeting text in white */
+    .greeting {
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .logo-img {
+      height: 40px;
+      width: auto;
+    }
+    .card-img-top {
+      height: 200px;
+      object-fit: cover;
+    }
+  </style>
 </head>
 
 <body>
-  <div class="container mt-4">
-    <!-- Navbar -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h4><a class="home-button" href="home.html">Marketplace</a></h4>
-      <input type="text" class="form-control w-50" placeholder="Search...">
-      <button class="btn btn-outline-secondary">Filter</button>
+  <!-- Sticky Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-custom sticky-top mb-3">
+    <div class="container-fluid">
+      <!-- Logo + Title -->
+      <a class="navbar-brand d-flex align-items-center" href="index.html">
+        <img 
+          src="/Front End/Images/RuMarketplaceLogo.png" 
+          alt="RU Marketplace" 
+          class="logo-img"
+        />
+        <span class="ms-2 fw-bold">RU-Marketplace</span>
+      </a>
 
-      <!-- Profile Dropdown -->
-      <div class="dropdown">
-        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          Profile
+      <!-- Search & Filter -->
+      <div class="d-flex align-items-center ms-auto me-3">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Search..." />
+          <button class="btn btn-outline-light">Filter</button>
+        </div>
+      </div>
+
+      <!-- User Icon Dropdown -->
+      <div class="dropdown me-3">
+        <button 
+          class="user-icon-btn dropdown-toggle" 
+          type="button" 
+          data-bs-toggle="dropdown" 
+          aria-expanded="false"
+          id="userIconBtn"
+        >
+          <!-- Placeholder user icon -->
+          <img src="/Front End/Images/user.png" alt="User Icon" />
+          <!-- Greeting text, if logged in -->
+          <span id="greeting" class="greeting"></span>
         </button>
-        <ul class="dropdown-menu" id="profile-dropdown">
-          <li><a class="dropdown-item" href="#">Logout</a></li>
-        </ul>
+        <ul class="dropdown-menu" id="userDropdownMenu"></ul>
       </div>
-
-      <!-- Sign In Button -->
-      <a href="signin.html" class="btn btn-primary" id="signin-btn">Sign In</a>
     </div>
+  </nav>
 
+  <div class="container">
     <!-- Product Grid -->
-    <div class="row" id="product-grid">
-      <!-- Product 1 -->
-      <div class="col-md-6 mb-4">
-        <div class="card">
-          <img src="https://via.placeholder.com/600x400" class="card-img-top" alt="Gaming PC">
-          <div class="card-body">
-            <h5 class="card-title">Gaming PC</h5>
-            <p class="card-text">High-performance gaming PC with RTX 3080.</p>
-            <p class="text-success">$1499</p>
-            <button class="btn btn-success" onclick="buyNow(
-              'Gaming PC',
-              'High-performance gaming PC with RTX 3080.',
-              '1499',
-              'https://via.placeholder.com/600x400'
-            )">Buy Now</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Product 2 -->
-      <div class="col-md-6 mb-4">
-        <div class="card">
-          <img src="https://via.placeholder.com/600x400" class="card-img-top" alt="iPhone 14 Pro">
-          <div class="card-body">
-            <h5 class="card-title">iPhone 14 Pro</h5>
-            <p class="card-text">Brand new iPhone 14 Pro with 256GB storage.</p>
-            <p class="text-success">$1099</p>
-            <button class="btn btn-success" onclick="buyNow(
-              'iPhone 14 Pro',
-              'Brand new iPhone 14 Pro with 256GB storage.',
-              '1099',
-              'https://via.placeholder.com/600x400'
-            )">Buy Now</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Product 3 -->
-      <div class="col-md-6 mb-4">
-        <div class="card">
-          <img src="https://via.placeholder.com/600x400" class="card-img-top" alt="Electric Scooter">
-          <div class="card-body">
-            <h5 class="card-title">Electric Scooter</h5>
-            <p class="card-text">Fast and efficient electric scooter for city travel.</p>
-            <p class="text-success">$599</p>
-            <button class="btn btn-success" onclick="buyNow(
-              'Electric Scooter',
-              'Fast and efficient electric scooter for city travel.',
-              '599',
-              'https://via.placeholder.com/600x400'
-            )">Buy Now</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Product 4 -->
-      <div class="col-md-6 mb-4">
-        <div class="card">
-          <img src="https://via.placeholder.com/600x400" class="card-img-top" alt="Sony Headphones">
-          <div class="card-body">
-            <h5 class="card-title">Sony Headphones</h5>
-            <p class="card-text">Noise-canceling over-ear headphones with deep bass.</p>
-            <p class="text-success">$299</p>
-            <button class="btn btn-success" onclick="buyNow(
-              'Sony Headphones',
-              'Noise-canceling over-ear headphones with deep bass.',
-              '299',
-              'https://via.placeholder.com/600x400'
-            )">Buy Now</button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <div class="row" id="product-grid"></div>
   </div>
 
   <!-- Bootstrap Bundle -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script 
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+  ></script>
 
-  <!-- Auth Simulation Script -->
   <script>
-    let isLoggedIn = false;
-
-    document.addEventListener("DOMContentLoaded", function() {
-      const profileDropdown = document.getElementById("profile-dropdown");
-      const signInBtn = document.getElementById("signin-btn");
-
-      if (isLoggedIn) {
-        profileDropdown.innerHTML = `
-          <li><a class="dropdown-item" href="#">Account Settings</a></li>
-          <li><a class="dropdown-item" href="#">Wishlist</a></li>
-          <li><a class="dropdown-item" href="#">Messages</a></li>
-          <li><a class="dropdown-item" href="#">Sell Product</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" href="#">Logout</a></li>
-        `;
-        signInBtn.style.display = "none";
+    // Hardcoded products
+    const products = [
+      {
+        title: "Gaming PC",
+        description: "High-performance gaming PC with RTX 3080.",
+        price: 1499,
+        image: "/Front End/Images/gamingpc.png"
+      },
+      {
+        title: "iPhone 14 Pro",
+        description: "Brand new iPhone 14 Pro with 256GB storage.",
+        price: 1099,
+        image: "/Front End/Images/iphone.png"
+      },
+      {
+        title: "Electric Scooter",
+        description: "Fast and efficient electric scooter for city travel.",
+        price: 599,
+        image: "/Front End/Images/electricscooter.png"
+      },
+      {
+        title: "Sony Headphones",
+        description: "Noise-canceling over-ear headphones with deep bass.",
+        price: 299,
+        image: "/Front End/Images/sony.png"
+      },
+      {
+        title: "LED Wall Lights",
+        description: "Colorful LED strips to decorate your dorm.",
+        price: 20,
+        image: "/Front End/Images/ledwalllights.png"
+      },
+      {
+        title: "Parking Pass",
+        description: "Valid on-campus parking pass for the semester.",
+        price: 100,
+        image: "/Front End/Images/parkingpass.png"
+      },
+      {
+        title: "Dorm Chair",
+        description: "Comfortable chair for your desk or lounge.",
+        price: 30,
+        image: "/Front End/Images/dormchair.png"
+      },
+      {
+        title: "Laptop",
+        description: "Lightweight laptop, perfect for note-taking and research.",
+        price: 700,
+        image: "/Front End/Images/laptop.png"
+      },
+      {
+        title: "Mini Fridge",
+        description: "Keep snacks and drinks cool in your dorm.",
+        price: 75,
+        image: "/Front End/Images/minifridge.png"
+      },
+      {
+        title: "Microwave",
+        description: "Compact microwave for quick dorm meals.",
+        price: 50,
+        image: "/Front End/Images/microwave.png"
+      },
+      {
+        title: "Textbooks",
+        description: "Various textbooks from core and elective classes.",
+        price: 80,
+        image: "/Front End/Images/textbooks.png"
+      },
+      {
+        title: "Calculator",
+        description: "Scientific calculator for math and science courses.",
+        price: 15,
+        image: "/Front End/Images/calculator.png"
+      },
+      {
+        title: "Backpack",
+        description: "Durable backpack with multiple compartments.",
+        price: 25,
+        image: "/Front End/Images/backpack.png"
+      },
+      {
+        title: "Mechanical Keyboard",
+        description: "Tactile mechanical keyboard for a satisfying typing experience.",
+        price: 40,
+        image: ""
+      },
+      {
+        title: "Wireless Mouse",
+        description: "Reliable wireless mouse for everyday use.",
+        price: 20,
+        image: ""
+      },
+      {
+        title: "Bean Bag Chair",
+        description: "Cozy bean bag seat, perfect for dorm lounging.",
+        price: 45,
+        image: ""
+      },
+      {
+        title: "Gaming Headset",
+        description: "Over-ear headset with microphone for online gaming.",
+        price: 60,
+        image: ""
+      },
+      {
+        title: "Monitor",
+        description: "24-inch 1080p monitor, great for gaming or productivity.",
+        price: 120,
+        image: ""
+      },
+      {
+        title: "Dorm Lamp",
+        description: "Adjustable desk lamp for late-night study sessions.",
+        price: 10,
+        image: ""
+      },
+      {
+        title: "Bike",
+        description: "Used bike, ideal for commuting around campus.",
+        price: 120,
+        image: ""
       }
-    });
-  </script>
+    ];
 
-  <!-- Buy Now Redirect Script -->
-  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      renderProducts();
+      setupUserIconDropdown();
+    });
+
+    function renderProducts() {
+      const productGrid = document.getElementById("product-grid");
+      productGrid.innerHTML = "";
+
+      products.forEach(product => {
+        const colDiv = document.createElement("div");
+        colDiv.classList.add("col-sm-6", "col-md-4", "col-lg-3", "mb-4");
+
+        colDiv.innerHTML = `
+          <div class="card h-100">
+            <img 
+              src="${product.image}"
+              class="card-img-top"
+              alt="${product.title}"
+            />
+            <div class="card-body">
+              <h5 class="card-title">${product.title}</h5>
+              <p class="card-text">${product.description}</p>
+              <p class="text-success">$${product.price}</p>
+              <button class="btn btn-success" onclick="buyNow(
+                '${product.title}',
+                '${product.description}',
+                '${product.price}',
+                '${product.image}'
+              )">Buy Now</button>
+            </div>
+          </div>
+        `;
+        productGrid.appendChild(colDiv);
+      });
+    }
+
+    function setupUserIconDropdown() {
+      const greetingEl = document.getElementById("greeting");
+      const userDropdownMenu = document.getElementById("userDropdownMenu");
+
+      // Check localStorage for login state
+      const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+      const username = localStorage.getItem("username") || "";
+
+      // Clear the dropdown
+      userDropdownMenu.innerHTML = "";
+
+      if (isLoggedIn && username) {
+        // Show "Hello, username!"
+        greetingEl.textContent = `Hello, ${username}!`;
+
+        // Dropdown items: Profile + Logout
+        userDropdownMenu.innerHTML = `
+          <li><a class="dropdown-item" href="profile.html">Profile</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" id="logoutLink" href="#">Logout</a></li>
+        `;
+      } else {
+        // Not logged in => no greeting
+        greetingEl.textContent = "";
+
+        // Dropdown item: Login
+        userDropdownMenu.innerHTML = `
+          <li><a class="dropdown-item" id="loginLink" href="#">Login</a></li>
+        `;
+      }
+
+      // Attach event listeners for login or logout
+      const loginLink = document.getElementById("loginLink");
+      if (loginLink) {
+        loginLink.addEventListener("click", () => {
+          window.location.href = "signin.html";
+        });
+      }
+
+      const logoutLink = document.getElementById("logoutLink");
+      if (logoutLink) {
+        logoutLink.addEventListener("click", () => {
+          // Clear login state
+          localStorage.removeItem("isLoggedIn");
+          localStorage.removeItem("username");
+          // Reload page to reflect changes
+          location.reload();
+        });
+      }
+    }
+
     function buyNow(title, description, price, image) {
       const query = new URLSearchParams({
         title,
@@ -140,9 +338,9 @@
         price,
         image
       }).toString();
-
       window.location.href = `Product.html?${query}`;
     }
   </script>
 </body>
 </html>
+
