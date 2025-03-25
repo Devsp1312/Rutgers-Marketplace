@@ -1,0 +1,52 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    background-color: #e1dfd2;
+}
+
+header {
+    background: #333;
+    color: #e1dfd2;
+    padding: 10px 0;
+}
+
+main {
+    padding: 20px;
+}
+
+footer {
+    background: #333;
+    color: white;
+    padding: 10px 0;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+button {
+    background-color: #008CBA;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+
+.logo-img {
+    height: 40px;  
+    width: auto;
+  }
+  
+  .navbar-brand span {
+    font-size: 1.2rem; 
+    color: #b90707;        
+  }
+  
+  .navbar {
+    padding: 0.75rem 1rem;
+  }
+  
+
