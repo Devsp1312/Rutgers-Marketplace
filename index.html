@@ -32,20 +32,19 @@
       color: #393b3f;
     }
 
-    /* Single user icon button for dropdown */
-    .user-icon-btn {
+    /* Icon button styles (wishlist & user) */
+    .icon-btn {
       background: transparent;
       border: none;
       color: #fff;
       display: flex;
       align-items: center;
-      gap: 8px; /* space between icon and greeting */
+      gap: 8px; /* space between icon and text if needed */
     }
-    .user-icon-btn:hover {
+    .icon-btn:hover {
       background-color: rgba(255,255,255,0.2);
     }
-
-    .user-icon-btn img {
+    .icon-btn img {
       height: 32px;
       width: auto;
     }
@@ -81,29 +80,50 @@
         <span class="ms-2 fw-bold">RU-Marketplace</span>
       </a>
 
-      <!-- Search & Filter -->
-      <div class="d-flex align-items-center ms-auto me-3">
-        <div class="input-group">
+      <!-- Left-aligned Search & Filter -->
+      <div class="d-flex align-items-center">
+        <div class="input-group me-3">
           <input type="text" class="form-control" placeholder="Search..." />
           <button class="btn btn-outline-light">Filter</button>
         </div>
       </div>
 
-      <!-- User Icon Dropdown -->
-      <div class="dropdown me-3">
-        <button 
-          class="user-icon-btn dropdown-toggle" 
-          type="button" 
-          data-bs-toggle="dropdown" 
-          aria-expanded="false"
-          id="userIconBtn"
-        >
-          <!-- Placeholder user icon -->
-          <img src="FrontEnd/Images/user.png" alt="User Icon" />
-          <!-- Greeting text, if logged in -->
-          <span id="greeting" class="greeting"></span>
-        </button>
-        <ul class="dropdown-menu" id="userDropdownMenu"></ul>
+      <!-- Right-aligned icons (wishlist + user) -->
+      <div class="d-flex align-items-center ms-auto me-3">
+        <!-- Wishlist Icon Dropdown -->
+        <div class="dropdown me-3">
+          <button 
+            class="icon-btn dropdown-toggle" 
+            type="button" 
+            data-bs-toggle="dropdown" 
+            aria-expanded="false"
+            id="wishlistBtn"
+          >
+            <!-- Placeholder wishlist icon -->
+            <img src="FrontEnd/Images/wishlisticon.png" alt="Wishlist Icon" />
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" id="wishlistDropdownMenu">
+            <!-- Example placeholder item -->
+            <li><a class="dropdown-item" href="#">Your wishlist is empty</a></li>
+          </ul>
+        </div>
+
+        <!-- User Icon Dropdown -->
+        <div class="dropdown">
+          <button 
+            class="icon-btn dropdown-toggle" 
+            type="button" 
+            data-bs-toggle="dropdown" 
+            aria-expanded="false"
+            id="userIconBtn"
+          >
+            <!-- Placeholder user icon -->
+            <img src="FrontEnd/Images/user.png" alt="User Icon" />
+            <!-- Greeting text, if logged in -->
+            <span id="greeting" class="greeting"></span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" id="userDropdownMenu"></ul>
+        </div>
       </div>
     </div>
   </nav>
@@ -343,4 +363,3 @@
   </script>
 </body>
 </html>
-
