@@ -50,3 +50,35 @@ button {
   }
   
 
+  .autocomplete-dropdown {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    max-height: 200px;
+    overflow-y: auto;
+    position: absolute;
+    z-index: 1000;
+    width: 100%; /* match input's width */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .autocomplete-dropdown .dropdown-item {
+    padding: 5px 10px;
+    cursor: pointer;
+    color: #333;
+  }
+  
+  .autocomplete-dropdown .dropdown-item:hover {
+    background-color: #f0f0f0;
+  }
+    .autocomplete-dropdown .dropdown-item.active {
+        background-color: #007bff;
+        color: white;
+    }
+    .autocomplete-dropdown .dropdown-item.disabled {
+        color: #ccc;
+        cursor: not-allowed;
+    }
+    .autocomplete-dropdown .dropdown-item.selected {
+        background-color: #007bff;
+        color: white;
+    }

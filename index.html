@@ -65,6 +65,14 @@
     }
   </style>
 </head>
+<script type="module">
+  import Autocomplete from './Autocomplete.js';
+
+  // Initialize the autocomplete with the products array
+  document.addEventListener('DOMContentLoaded', () => {
+    new Autocomplete('.search-input', products);
+  });
+</script>
 
 <body>
   <!-- Sticky Navbar -->
@@ -83,7 +91,8 @@
       <!-- Left-aligned Search & Filter -->
       <div class="d-flex align-items-center">
         <div class="input-group me-3">
-          <input type="text" class="form-control" placeholder="Search..." />
+          <input type="text" class="form-control search-input" placeholder="Search...">
+
           <button class="btn btn-outline-light">Filter</button>
         </div>
       </div>
@@ -362,4 +371,5 @@
     }
   </script>
 </body>
+
 </html>
