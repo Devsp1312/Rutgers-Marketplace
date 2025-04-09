@@ -34,23 +34,21 @@ button {
     cursor: pointer;
 }
 
-
 .logo-img {
     height: 40px;  
     width: auto;
-  }
-  
-  .navbar-brand span {
+}
+
+.navbar-brand span {
     font-size: 1.2rem; 
     color: #b90707;        
-  }
-  
-  .navbar {
-    padding: 0.75rem 1rem;
-  }
-  
+}
 
-  .autocomplete-dropdown {
+.navbar {
+    padding: 0.75rem 1rem;
+}
+
+.autocomplete-dropdown {
     background-color: #fff;
     border: 1px solid #ddd;
     max-height: 200px;
@@ -59,26 +57,78 @@ button {
     z-index: 1000;
     width: 100%; /* match input's width */
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-  
-  .autocomplete-dropdown .dropdown-item {
+}
+
+.autocomplete-dropdown .dropdown-item {
     padding: 5px 10px;
     cursor: pointer;
     color: #333;
-  }
-  
-  .autocomplete-dropdown .dropdown-item:hover {
+}
+
+.autocomplete-dropdown .dropdown-item:hover {
     background-color: #f0f0f0;
-  }
-    .autocomplete-dropdown .dropdown-item.active {
-        background-color: #007bff;
-        color: white;
-    }
-    .autocomplete-dropdown .dropdown-item.disabled {
-        color: #ccc;
-        cursor: not-allowed;
-    }
-    .autocomplete-dropdown .dropdown-item.selected {
-        background-color: #007bff;
-        color: white;
-    }
+}
+
+.autocomplete-dropdown .dropdown-item.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.autocomplete-dropdown .dropdown-item.disabled {
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+.autocomplete-dropdown .dropdown-item.selected {
+    background-color: #007bff;
+    color: white;
+}
+
+.navbar-custom {
+    background-color: #393b3f;
+}
+
+.navbar-custom .navbar-brand,
+.navbar-custom .nav-link,
+.navbar-custom .dropdown-toggle,
+.navbar-custom .btn {
+    color: #fff !important;
+}
+
+.navbar-custom .btn-outline-light {
+    border-color: #fff;
+    color: #fff;
+}
+
+.navbar-custom .btn-outline-light:hover {
+    background-color: #fff;
+    color: #393b3f;
+}
+
+.icon-btn {
+    background: transparent;
+    border: none;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.icon-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.icon-btn img {
+    height: 32px;
+    width: auto;
+}
+
+.greeting {
+    color: #fff;
+    font-weight: bold;
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
