@@ -2,22 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>User Profile</title>
-  <link 
-    rel="stylesheet" 
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-  />
+  
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  
   <style>
-    /* Body background color */
+    /* Global Styles */
     body {
       background-color: #e1dfd2;
       margin: 0;
       padding: 0;
     }
-
-    /* Navbar custom class: same as index.html */
+    /* Navbar Styles (consistent with index) */
     .navbar-custom {
-      background-color: #393b3f; /* Gray */
+      background-color: #393b3f;
     }
     .navbar-custom .navbar-brand,
     .navbar-custom .nav-link,
@@ -25,8 +25,6 @@
     .navbar-custom .btn {
       color: #fff !important;
     }
-
-    /* Outline style for Filter or other buttons on the navbar */
     .navbar-custom .btn-outline-light {
       border-color: #fff;
       color: #fff;
@@ -35,8 +33,6 @@
       background-color: #fff;
       color: #393b3f;
     }
-
-    /* Single user icon button for dropdown (if you want to keep it consistent) */
     .user-icon-btn {
       background: transparent;
       border: none;
@@ -52,24 +48,24 @@
       height: 32px;
       width: auto;
     }
-
-    /* Greeting text in white */
     .greeting {
       color: #fff;
       font-weight: bold;
     }
-
-    /* Profile section layout */
+    /* Profile Page Layout */
     .profile-container {
       display: flex;
+      flex-wrap: wrap;
       gap: 2rem;
       margin-top: 2rem;
     }
-
-    /* Left column: user info */
     .profile-info {
-      flex: 0 0 250px; /* fixed width or adjust as needed */
+      flex: 0 0 250px;
       text-align: center;
+      background-color: #fff;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
     }
     .profile-info img {
       width: 120px;
@@ -78,195 +74,112 @@
       border-radius: 50%;
       margin-bottom: 1rem;
     }
-
-    /* Right column: tabs for listings, saved items, etc. */
     .profile-tabs {
       flex: 1;
+      background-color: #fff;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+    /* Modal Header */
+    .modal-header {
+      background-color: #393b3f;
+      color: #fff;
     }
   </style>
 </head>
 <body>
-  <!-- Sticky Navbar (same style as index.html) -->
+  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-custom sticky-top mb-3">
     <div class="container-fluid">
-      <!-- Logo + Title -->
       <a class="navbar-brand d-flex align-items-center" href="index.html">
-        <img 
-          src="/FrontEnd/Images/RuMarketplaceLogo.png" 
-          alt="RU Marketplace" 
-          style="height:40px; width:auto;"
-        />
+        <img src="/FrontEnd/Images/RuMarketplaceLogo.png" alt="RU Marketplace" style="height:40px; width:auto;" />
         <span class="ms-2 fw-bold">RU-Marketplace</span>
       </a>
-
-      <!-- Possibly add a "Messages" button or search bar here if you want -->
-
-      <!-- User Icon (for consistency) -->
-      <div class="dropdown me-3 ms-auto">
-        <button 
-          class="user-icon-btn dropdown-toggle" 
-          type="button" 
-          data-bs-toggle="dropdown" 
-          aria-expanded="false"
-          id="userIconBtn"
-        >
-          <!-- Placeholder user icon -->
+      <div class="dropdown ms-auto">
+        <button class="user-icon-btn dropdown-toggle" type="button" id="userIconBtn" data-bs-toggle="dropdown" aria-expanded="false">
           <img src="/FrontEnd/Images/user.png" alt="User Icon" />
-          <!-- Greeting text, if logged in -->
           <span id="greeting" class="greeting"></span>
         </button>
-        <ul class="dropdown-menu" id="userDropdownMenu"></ul>
+        <ul class="dropdown-menu dropdown-menu-end" id="userDropdownMenu"></ul>
       </div>
     </div>
   </nav>
-
+  
   <!-- Main Profile Content -->
   <div class="container profile-container">
     <!-- Left Column: User Info -->
     <div class="profile-info">
-      <!-- Placeholder user profile pic -->
-      <img src="/FrontEnd/Images/user.png" alt="User Profile Pic" />
-      <!-- Username & email placeholders -->
+      <img id="profile-picture" src="/FrontEnd/Images/user.png" alt="User Profile Pic" />
       <h4 id="profile-username">Username</h4>
       <p id="profile-email">user@example.com</p>
-      <button class="btn btn-secondary">Edit Profile</button>
+      <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit Profile</button>
     </div>
-
-    <!-- Right Column: Tabs -->
+    
+    <!-- Right Column: Profile Tabs -->
     <div class="profile-tabs">
-      <!-- Bootstrap Nav Tabs -->
       <ul class="nav nav-tabs" id="profileTab" role="tablist">
         <li class="nav-item" role="presentation">
-          <button 
-            class="nav-link active" 
-            id="active-listings-tab" 
-            data-bs-toggle="tab" 
-            data-bs-target="#active-listings" 
-            type="button" 
-            role="tab" 
-            aria-controls="active-listings" 
-            aria-selected="true"
-          >
-            Active Listings
-          </button>
+          <button class="nav-link active" id="active-listings-tab" data-bs-toggle="tab" data-bs-target="#active-listings" type="button" role="tab" aria-controls="active-listings" aria-selected="true">Active Listings</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button 
-            class="nav-link" 
-            id="saved-items-tab" 
-            data-bs-toggle="tab" 
-            data-bs-target="#saved-items" 
-            type="button" 
-            role="tab" 
-            aria-controls="saved-items" 
-            aria-selected="false"
-          >
-            Saved Items
-          </button>
+          <button class="nav-link" id="saved-items-tab" data-bs-toggle="tab" data-bs-target="#saved-items" type="button" role="tab" aria-controls="saved-items" aria-selected="false">Saved Items</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button 
-            class="nav-link" 
-            id="purchase-history-tab" 
-            data-bs-toggle="tab" 
-            data-bs-target="#purchase-history" 
-            type="button" 
-            role="tab" 
-            aria-controls="purchase-history" 
-            aria-selected="false"
-          >
-            Purchase History
-          </button>
+          <button class="nav-link" id="purchase-history-tab" data-bs-toggle="tab" data-bs-target="#purchase-history" type="button" role="tab" aria-controls="purchase-history" aria-selected="false">Purchase History</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button 
-            class="nav-link" 
-            id="create-listing-tab" 
-            data-bs-toggle="tab" 
-            data-bs-target="#create-listing" 
-            type="button" 
-            role="tab" 
-            aria-controls="create-listing" 
-            aria-selected="false"
-          >
-            Create Listing
-          </button>
+          <button class="nav-link" id="create-listing-tab" data-bs-toggle="tab" data-bs-target="#create-listing" type="button" role="tab" aria-controls="create-listing" aria-selected="false">Create Listing</button>
         </li>
       </ul>
-
-      <!-- Tab Content -->
+      
       <div class="tab-content mt-3" id="profileTabContent">
-        <!-- Active Listings -->
-        <div 
-          class="tab-pane fade show active" 
-          id="active-listings" 
-          role="tabpanel" 
-          aria-labelledby="active-listings-tab"
-        >
+        <!-- Active Listings Tab -->
+        <div class="tab-pane fade show active" id="active-listings" role="tabpanel" aria-labelledby="active-listings-tab">
           <h5>Active Listings</h5>
-          <p>Here are your current items for sale.</p>
-          <!-- Placeholder items -->
+          <p>Your current items for sale are displayed here.</p>
           <div class="row">
             <div class="col-md-4 mb-2">Item 1</div>
             <div class="col-md-4 mb-2">Item 2</div>
             <div class="col-md-4 mb-2">Item 3</div>
           </div>
         </div>
-
-        <!-- Saved Items -->
-        <div 
-          class="tab-pane fade" 
-          id="saved-items" 
-          role="tabpanel" 
-          aria-labelledby="saved-items-tab"
-        >
+        <!-- Saved Items Tab -->
+        <div class="tab-pane fade" id="saved-items" role="tabpanel" aria-labelledby="saved-items-tab">
           <h5>Saved Items</h5>
-          <p>Items you’ve bookmarked.</p>
+          <p>Items you have bookmarked appear here.</p>
           <div class="row">
             <div class="col-md-4 mb-2">Item 1</div>
             <div class="col-md-4 mb-2">Item 2</div>
             <div class="col-md-4 mb-2">Item 3</div>
           </div>
         </div>
-
-        <!-- Purchase History -->
-        <div 
-          class="tab-pane fade" 
-          id="purchase-history" 
-          role="tabpanel" 
-          aria-labelledby="purchase-history-tab"
-        >
+        <!-- Purchase History Tab -->
+        <div class="tab-pane fade" id="purchase-history" role="tabpanel" aria-labelledby="purchase-history-tab">
           <h5>Purchase History</h5>
-          <p>Items you’ve bought in the past.</p>
+          <p>Your past purchases appear here.</p>
           <div class="row">
             <div class="col-md-4 mb-2">Item 1</div>
             <div class="col-md-4 mb-2">Item 2</div>
             <div class="col-md-4 mb-2">Item 3</div>
           </div>
         </div>
-
-        <!-- Create Listing -->
-        <div 
-          class="tab-pane fade" 
-          id="create-listing" 
-          role="tabpanel" 
-          aria-labelledby="create-listing-tab"
-        >
+        <!-- Create Listing Tab -->
+        <div class="tab-pane fade" id="create-listing" role="tabpanel" aria-labelledby="create-listing-tab">
           <h5>Create a New Listing</h5>
-          <p>Fill out details for a new item you want to sell.</p>
-          <!-- Example form (you can expand) -->
-          <form>
+          <p>Fill out the details for a new item for sale.</p>
+          <form id="createListingForm">
             <div class="mb-3">
               <label for="listingTitle" class="form-label">Title</label>
-              <input type="text" class="form-control" id="listingTitle" />
+              <input type="text" class="form-control" id="listingTitle" required />
             </div>
             <div class="mb-3">
               <label for="listingDesc" class="form-label">Description</label>
-              <textarea class="form-control" id="listingDesc" rows="3"></textarea>
+              <textarea class="form-control" id="listingDesc" rows="3" required></textarea>
             </div>
             <div class="mb-3">
               <label for="listingPrice" class="form-label">Price</label>
-              <input type="number" class="form-control" id="listingPrice" />
+              <input type="number" class="form-control" id="listingPrice" required />
             </div>
             <button type="submit" class="btn btn-success">Submit Listing</button>
           </form>
@@ -274,84 +187,205 @@
       </div>
     </div>
   </div>
-
-  <script 
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-  ></script>
-
+  
+  <!-- Edit Profile Modal -->
+  <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editProfileForm">
+            <div class="mb-3">
+              <label for="editUsername" class="form-label">Username</label>
+              <input type="text" class="form-control" id="editUsername" required />
+            </div>
+            <div class="mb-3">
+              <label for="editEmail" class="form-label">Email</label>
+              <input type="email" class="form-control" id="editEmail" required />
+            </div>
+            <!-- Additional fields (e.g., profile picture URL) can be added here -->
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
   <script>
+    // Initialize components when DOM is ready
     document.addEventListener("DOMContentLoaded", () => {
       setupNavbar();
       setupProfilePage();
+      setupCreateListingForm();
+      setupEditProfileForm();
     });
 
     function setupNavbar() {
       const userDropdownMenu = document.getElementById("userDropdownMenu");
       const greetingEl = document.getElementById("greeting");
-
       const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
       const username = localStorage.getItem("username") || "";
-
-      // Clear the dropdown
       userDropdownMenu.innerHTML = "";
-
       if (isLoggedIn && username) {
-        // Greet user in white
         greetingEl.textContent = `Hello, ${username}!`;
-
-        // Show "Profile" & "Logout"
         userDropdownMenu.innerHTML = `
           <li><a class="dropdown-item" href="profile.html">Profile</a></li>
           <li><hr class="dropdown-divider"></li>
           <li><a class="dropdown-item" id="logoutLink" href="#">Logout</a></li>
         `;
       } else {
-        // Not logged in => no greeting
         greetingEl.textContent = "";
-
-        // Show "Login"
         userDropdownMenu.innerHTML = `
           <li><a class="dropdown-item" id="loginLink" href="#">Login</a></li>
         `;
       }
-
-      // Attach events
       const loginLink = document.getElementById("loginLink");
       if (loginLink) {
         loginLink.addEventListener("click", () => {
           window.location.href = "signin.html";
         });
       }
-
       const logoutLink = document.getElementById("logoutLink");
       if (logoutLink) {
         logoutLink.addEventListener("click", () => {
           localStorage.removeItem("isLoggedIn");
           localStorage.removeItem("username");
-          window.location.href = "index.html"; // or profile.html
+          localStorage.removeItem("userEmail");
+          window.location.href = "index.html";
         });
       }
     }
 
     function setupProfilePage() {
-      // If you want to show user info in left column
       const profileUsernameEl = document.getElementById("profile-username");
       const profileEmailEl = document.getElementById("profile-email");
-
+      const editEmailEl = document.getElementById("editEmail");
+      
       const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-      const username = localStorage.getItem("username") || "";
+      const username = localStorage.getItem("username") || "Guest";
+      const userEmail = localStorage.getItem("userEmail") || "";
 
-      if (isLoggedIn && username) {
-        // Display username (and email if stored somewhere)
+      if (isLoggedIn) {
         profileUsernameEl.textContent = username;
-        // If you store email in localStorage, do:
-        // profileEmailEl.textContent = localStorage.getItem("userEmail") || "user@example.com";
+        profileEmailEl.textContent = userEmail;
+        // Pre-fill the edit form email
+        if (editEmailEl) {
+          editEmailEl.value = userEmail;
+        }
       } else {
-        // If user is not logged in, maybe redirect or show "not logged in" message
         profileUsernameEl.textContent = "Guest";
         profileEmailEl.textContent = "Not logged in";
+      }
+    }
+    
+    function setupCreateListingForm() {
+      const form = document.getElementById("createListingForm");
+      if (form) {
+        form.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const title = document.getElementById("listingTitle").value;
+          const description = document.getElementById("listingDesc").value;
+          const price = document.getElementById("listingPrice").value;
+          console.log("New Listing Submitted:", { title, description, price });
+          alert("Listing submitted (demo action).");
+          form.reset();
+        });
+      }
+    }
+    
+    function setupEditProfileForm() {
+      const editForm = document.getElementById("editProfileForm");
+      if (editForm) {
+        // Pre-fill form fields
+        document.getElementById("editUsername").value = localStorage.getItem("username") || "";
+        document.getElementById("editEmail").value = localStorage.getItem("userEmail") || "";
+
+        editForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const newUsername = document.getElementById("editUsername").value;
+          const newEmail = document.getElementById("editEmail").value;
+
+          // Save both username and email
+          localStorage.setItem("username", newUsername);
+          localStorage.setItem("userEmail", newEmail);
+
+          // Close modal and update display
+          const modalEl = document.getElementById("editProfileModal");
+          const modal = bootstrap.Modal.getInstance(modalEl);
+          modal.hide();
+          
+          // Refresh the display
+          setupNavbar();
+          setupProfilePage();
+        });
       }
     }
   </script>
 </body>
 </html>
+  <script src="https://apis.google.com/js/api.js?onload=gapiLoaded"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer onload="gisLoaded()"></script>
+  <script>
+    async function createCalendarEvent() {
+      const event = {
+        summary: "New Listing Created",
+        description: "A new listing has been created.",
+        start: {
+          dateTime: new Date().toISOString(),
+          timeZone: "America/New_York",
+        },
+        end: {
+          dateTime: new Date(new Date().getTime() + 60 * 60 * 1000).toISOString(),
+          timeZone: "America/New_York",
+        },
+      };
+      try {
+        const response = await gapi.client.calendar.events.insert({
+          calendarId: "primary",
+          resource: event,
+        });
+        console.log("Event created:", response);
+      } catch (error) {
+        console.error("Error creating event:", error);
+      }
+    }
+  </script>
+  <script>
+    let gapiInited = false;
+    let gisInited = false;
+    let tokenClient;
+
+    function gapiLoaded() {
+      gapi.load("client", () => {
+        gapi.client.init({
+          apiKey: "YOUR_API_KEY",
+          clientId: "YOUR_CLIENT_ID",
+          discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
+          scope: "https://www.googleapis.com/auth/calendar.events",
+        }).then(() => {
+          gapiInited = true;
+        });
+      });
+    }
+
+    function gisLoaded() {
+      tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: "YOUR_CLIENT_ID",
+        scope: "https://www.googleapis.com/auth/calendar.events",
+        callback: (response) => {
+          if (response.error) {
+            console.error("Error in authentication:", response.error);
+            return;
+          }
+          createCalendarEvent();
+        },
+      });
+      gisInited = true;
+    }
+  </script>

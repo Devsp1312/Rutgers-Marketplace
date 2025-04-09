@@ -10,8 +10,9 @@
     rel="stylesheet"
   />
 
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css" />
+
+
 
   <!-- Add this line before your other scripts -->
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
@@ -212,9 +213,11 @@
       if (response.credential) {
         const user = jwt_decode(response.credential);
         const username = user.name || user.email || "User";
+        const email = user.email || "";  // Add this line
 
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("username", username);
+        localStorage.setItem("userEmail", email);  // Add this line
         location.reload();
       } else {
         console.error("No credentials received.");
