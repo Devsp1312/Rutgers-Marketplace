@@ -13,6 +13,9 @@
   <!-- Custom CSS -->
   <link rel="stylesheet" href="styles.css">
 
+  <!-- Add this line before your other scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+
   <!-- Google Sign-In SDKs -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://apis.google.com/js/api.js" async></script>
@@ -178,7 +181,7 @@
         greetingEl.textContent = "";
         userDropdownMenu.innerHTML = `
           <div id="g_id_onload"
-               data-client_id= GOOGLE_CLIENT_ID
+               data-client_id= "922908217557-2osq9upebgcpke4jl560hqbl77eodu5i.apps.googleusercontent.com"
                data-context="signin"
                data-ux_mode="popup"
                data-callback="HandleAuth"
