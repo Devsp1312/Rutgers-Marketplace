@@ -25,7 +25,8 @@
 <!-- Autocomplete script module -->
 <script type="module">
   import Autocomplete from './Autocomplete.js';
-
+  // <!-- import db from './db_funcs.js'; -->
+  
   document.addEventListener('DOMContentLoaded', () => {
     new Autocomplete('.search-input', products);
   });
@@ -94,6 +95,7 @@
 
   <script>
     // Product List (static for now)
+
     const products = [
       { title: "Gaming PC", description: "High-performance gaming PC with RTX 3080.", price: 1499, image: "FrontEnd/Images/gamingpc.png" },
       { title: "iPhone 14 Pro", description: "Brand new iPhone 14 Pro with 256GB storage.", price: 1099, image: "FrontEnd/Images/iphone.png" },
@@ -218,7 +220,22 @@
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("username", username);
         localStorage.setItem("userEmail", email);  // Add this line
-        location.reload();
+        // location.reload();
+        
+        const res = await fetch('http://localhost:3000/api/user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: username, email: email }),
+        }).then(res => {
+          if (!res.ok) {
+            throw new Error('Network response was not ok');
+          }
+          location.reload();
+          return res.json();
+        });
+        const data = await res.json();
+        console.log(data.id);
+        //location.reload();
       } else {
         console.error("No credentials received.");
       }

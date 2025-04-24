@@ -1,11 +1,15 @@
-require('dotenv').config();
-const mongoose = require('mongoose');
+import dotenv from 'dotenv';
+dotenv.config();
+
+import mongoose from 'mongoose';
+//const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const DB_URI = `mongodb+srv://${process.env.MONGO_DB_USER}:${process.env.MONGO_DB_PASSWORD}@ru-marketplace.2zzoe.mongodb.net/marketplace?retryWrites=true&w=majority&appName=ru-marketplace`;
+// const DB_URI = `mongodb+srv://${process.env.MONGO_DB_USER}:${process.env.MONGO_DB_PASSWORD}@ru-marketplace.2zzoe.mongodb.net/marketplace?retryWrites=true&w=majority&tls=true&ssl=true&tlsAllowInvalidCertificates=true&tlsAllowInvalidHostnames=true`;
 
 
-function connectToDB() {
+export const connectToDB = async () => {
     return new Promise((resolve, reject) => {
       mongoose.connect(DB_URI);
   
@@ -50,6 +54,10 @@ const UserSchema = new Schema({
         type: String,
         required: true
     },
+    Email: {
+        type: String,
+        required: true
+    },
     Reviews: {
         type: [String],
         required: false
@@ -64,9 +72,10 @@ const UserSchema = new Schema({
 const Listing = mongoose.model('Listing', ListingSchema);
 const User = mongoose.model('User', UserSchema);
 
-async function addUser(name, reviews=[], listings=[]) {
+export const addUser = async (name, email, reviews = [], listings = []) => {
     const newUser = new User({
       Name: name,
+      Email: email,
       Reviews: reviews,
       Listings: listings
     });
@@ -78,12 +87,16 @@ async function addUser(name, reviews=[], listings=[]) {
     } catch (err) {
       console.error('Error adding user:', err);
     }
-  }
-  
-
-function getUser(id) {
-    return User.findById(id);
 }
+
+export const checkUser = async (email) => {
+    return User.exists({ Email: email });
+}
+
+export const getUser = async (email) => {
+    return await User.findOne({ email: new RegExp(`^${email}$`, 'i') });
+  };
+  
 
 async function addListing(title, description, price, seller_id, images) {
     const newListing = new Listing({
@@ -150,15 +163,16 @@ async function changeListingImages(listing_id, newImages) {
     console.log(`Images changed for listing: ${listing_id}`);
 }
 
-module.exports = {
-    connectToDB,
-    addUser,
-    getUser,
-    addListing,
-    getListing,
-    addReview,
-    changeListingPrice,
-    changeListingDescription,
-    changeListingTitle,
-    changeListingImages
-}
+// module.exports = {
+//     connectToDB,
+//     addUser,
+//     checkUser,
+//     getUser,
+//     addListing,
+//     getListing,
+//     addReview,
+//     changeListingPrice,
+//     changeListingDescription,
+//     changeListingTitle,
+//     changeListingImages
+// }
