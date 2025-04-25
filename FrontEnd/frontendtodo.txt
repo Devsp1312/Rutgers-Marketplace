@@ -36,3 +36,15 @@ NO HTML FOR DYMANIC CONTENT
             - displays all users/errors/reports
         - profile page
             - where users can update their own user profile
+
+
+4/14/2025
+- Change home page to components not static elements
+- add location as part of component
+- add tags for each listing component
+-in create listing add upload photo, add location, 
+- edit profile for photo/information
+- Filter.js needs to be completed
+- wishlist needs to be properly implemented
+- 
+- 
