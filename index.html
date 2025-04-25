@@ -210,36 +210,66 @@
       }
     }
 
-    // Callback from Google Sign-In
-    async function HandleAuth(response) {
-      if (response.credential) {
-        const user = jwt_decode(response.credential);
-        const username = user.name || user.email || "User";
-        const email = user.email || "";  // Add this line
 
-        localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("username", username);
-        localStorage.setItem("userEmail", email);  // Add this line
-        location.reload();
-        
-        const res = await fetch('http://localhost:3000/api/user', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: username, email: email }),
-        }).then(res => {
-          if (!res.ok) {
-            throw new Error('Network response was not ok');
-          }
-          location.reload();
-          return res.json();
-        });
-        const data = await res.json();
-        console.log(data.id);
-        location.reload();
-      } else {
-        console.error("No credentials received.");
-      }
+
+    async function HandleAuth(response) {
+  console.log('Google response:', response);
+  if (!response || !response.credential) {
+    console.error('❌ No Google credential received.');
+    return;
+  }
+
+  // 1) Decode user info
+  const { name, email: rawEmail } = jwt_decode(response.credential);
+  const normalizedEmail = (rawEmail || '').trim().toLowerCase();
+  console.log('→ Decoded user:', name, normalizedEmail);
+
+  // 2) Front-end Rutgers check (optional redundancy)
+  if (!normalizedEmail.endsWith('@scarletmail.rutgers.edu')) {
+    alert('Authentication failed: not a Rutgers account');
+    return;
+  }
+
+  try {
+    // 3) Call backend
+    const res = await fetch('http://localhost:3000/api/user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email: normalizedEmail })
+    });
+
+    // 4) Handle forbidden
+    if (res.status === 403) {
+      const { message } = await res.json();
+      alert(message);
+      return;
     }
+
+    // 5) Handle other errors
+    if (!res.ok) {
+      const err = await res.json();
+      console.error('❌ Backend error:', err);
+      alert(err.message || 'Server error');
+      return;
+    }
+
+    // 6) Success!
+    const { id } = await res.json();
+    console.log('✅ Auth success, user id:', id);
+
+    localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('username', name);
+    localStorage.setItem('userEmail', normalizedEmail);
+
+    location.reload();
+  } catch (err) {
+    console.error('❌ Network or fetch error:', err);
+    alert('Network error—please try again.');
+  }
+}
+
+
+
 
     // Redirect to product details page
     function buyNow(title, description, price, image) {
