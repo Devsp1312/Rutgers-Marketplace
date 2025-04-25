@@ -220,7 +220,7 @@
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("username", username);
         localStorage.setItem("userEmail", email);  // Add this line
-        // location.reload();
+        location.reload();
         
         const res = await fetch('http://localhost:3000/api/user', {
           method: 'POST',
