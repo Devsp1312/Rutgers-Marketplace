@@ -115,12 +115,12 @@
       setupUserIconDropdown();
 
       try {
-      // 1) Fetch real listings from your backend
+      // 1) Fetch products from db
       const res = await fetch('http://localhost:3000/api/listings');
       if (!res.ok) throw new Error(`Server error: ${res.status}`);
       const products = await res.json();
 
-      // 2) Pass them to your existing render function
+      // 2) Pass to render function
       renderProducts(products);
     } catch (err) {
       console.error('Could not load products:', err);
@@ -130,36 +130,41 @@
 
     });
 
-    // Render all products to the page
+    // Render products
     function renderProducts(items) {
-    const productGrid = document.getElementById("product-grid");
-    productGrid.innerHTML = "";
-
-    items.forEach(product => {
-      const colDiv = document.createElement("div");
-      colDiv.classList.add("col-sm-6", "col-md-4", "col-lg-3", "mb-4");
-      colDiv.innerHTML = `
-        <div class="card h-100">
-          <img src="${product.Images?.[0] || product.image || ''}"
-               class="card-img-top"
-               alt="${product.Title || product.title}" />
-          <div class="card-body">
-            <h5 class="card-title">${product.Title || product.title}</h5>
-            <p class="card-text">${product.Description || product.description}</p>
-            <p class="text-success">$${product.Price ?? product.price}</p>
-            <button class="btn btn-success" onclick="buyNow(
-              '${encodeURIComponent(product.Title || product.title)}',
-              '${encodeURIComponent(product.Description || product.description)}',
-              '${product.Price ?? product.price}',
-              '${encodeURIComponent(product.Images?.[0] || product.image || '')}'
-            )">Buy Now</button>
+      const productGrid = document.getElementById("product-grid");
+      productGrid.innerHTML = "";
+    
+      const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+    
+      items.forEach(product => {
+        const colDiv = document.createElement("div");
+        colDiv.classList.add("col-sm-6", "col-md-4", "col-lg-3", "mb-4");
+    
+        colDiv.innerHTML = `
+          <div class="card h-100">
+            <img src="${product.Images?.[0] || product.image || ''}" class="card-img-top" alt="${product.Title || product.title}" />
+            <div class="card-body">
+              <h5 class="card-title">${product.Title || product.title}</h5>
+              <p class="card-text">${product.Description || product.description}</p>
+              <p class="text-success">$${product.Price ?? product.price}</p>
+              ${
+                isLoggedIn
+                  ? `<button class="btn btn-success" onclick="buyNow(
+                      '${encodeURIComponent(product.Title || product.title)}',
+                      '${encodeURIComponent(product.Description || product.description)}',
+                      '${product.Price ?? product.price}',
+                      '${encodeURIComponent(product.Images?.[0] || product.image || '')}'
+                    )">Buy Now</button>`
+                  : ""
+              }
+            </div>
           </div>
-        </div>
-      `;
-      productGrid.appendChild(colDiv);
-    });
-  }
-
+        `;
+        productGrid.appendChild(colDiv);
+      });
+    }
+    
 
 
       // Attach event listeners for login or logout
