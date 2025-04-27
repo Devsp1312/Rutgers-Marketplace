@@ -124,12 +124,12 @@
       setupUserIconDropdown();
 
       try {
-      // 1) Fetch real listings from your backend
+      // 1) Fetch products from db
       const res = await fetch('http://localhost:3000/api/listings');
       if (!res.ok) throw new Error(`Server error: ${res.status}`);
       const products = await res.json();
 
-      // 2) Pass them to your existing render function
+      // 2) Pass to render function
       renderProducts(products);
     } catch (err) {
       console.error('Could not load products:', err);
@@ -139,7 +139,7 @@
 
     });
 
-    // Render all products to the page
+    // Render products
     function renderProducts(items) {
       const productGrid = document.getElementById("product-grid");
       productGrid.innerHTML = "";
