@@ -98,7 +98,7 @@ export const getUser = async (email) => {
   };
   
 
-async function addListing(title, description, price, seller_id, images) {
+export async function addListing(title, description, price, seller_id, images) {
     const newListing = new Listing({
       Title: title,
       Description: description,
@@ -176,3 +176,13 @@ async function changeListingImages(listing_id, newImages) {
 //     changeListingTitle,
 //     changeListingImages
 // }
+
+export async function getAllListings() {
+    try {
+      return await Listing.find();
+    } catch (err) {
+      console.error('Error fetching all listings:', err);
+      throw err;
+    }
+  }
+  

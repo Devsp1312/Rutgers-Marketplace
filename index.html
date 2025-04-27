@@ -96,63 +96,79 @@
   <script>
     // Product List (static for now)
 
-    const products = [
-      { title: "Gaming PC", description: "High-performance gaming PC with RTX 3080.", price: 1499, image: "FrontEnd/Images/gamingpc.png" },
-      { title: "iPhone 14 Pro", description: "Brand new iPhone 14 Pro with 256GB storage.", price: 1099, image: "FrontEnd/Images/iphone.png" },
-      { title: "Electric Scooter", description: "Fast and efficient electric scooter for city travel.", price: 599, image: "FrontEnd/Images/electricscooter.png" },
-      { title: "Sony Headphones", description: "Noise-canceling over-ear headphones with deep bass.", price: 299, image: "FrontEnd/Images/sony.png" },
-      { title: "LED Wall Lights", description: "Colorful LED strips to decorate your dorm.", price: 20, image: "FrontEnd/Images/ledwalllights.png" },
-      { title: "Parking Pass", description: "Valid on-campus parking pass for the semester.", price: 100, image: "FrontEnd/Images/parkingpass.png" },
-      { title: "Dorm Chair", description: "Comfortable chair for your desk or lounge.", price: 30, image: "FrontEnd/Images/dormchair.png" },
-      { title: "Laptop", description: "Lightweight laptop, perfect for note-taking and research.", price: 700, image: "FrontEnd/Images/laptop.png" },
-      { title: "Mini Fridge", description: "Keep snacks and drinks cool in your dorm.", price: 75, image: "FrontEnd/Images/minifridge.png" },
-      { title: "Microwave", description: "Compact microwave for quick dorm meals.", price: 50, image: "FrontEnd/Images/microwave.png" },
-      { title: "Textbooks", description: "Various textbooks from core and elective classes.", price: 80, image: "FrontEnd/Images/textbooks.png" },
-      { title: "Calculator", description: "Scientific calculator for math and science courses.", price: 15, image: "FrontEnd/Images/calculator.png" },
-      { title: "Backpack", description: "Durable backpack with multiple compartments.", price: 25, image: "FrontEnd/Images/backpack.png" },
-      { title: "Mechanical Keyboard", description: "Tactile mechanical keyboard for a satisfying typing experience.", price: 40, image: "" },
-      { title: "Wireless Mouse", description: "Reliable wireless mouse for everyday use.", price: 20, image: "" },
-      { title: "Bean Bag Chair", description: "Cozy bean bag seat, perfect for dorm lounging.", price: 45, image: "" },
-      { title: "Gaming Headset", description: "Over-ear headset with microphone for online gaming.", price: 60, image: "" },
-      { title: "Monitor", description: "24-inch 1080p monitor, great for gaming or productivity.", price: 120, image: "" },
-      { title: "Dorm Lamp", description: "Adjustable desk lamp for late-night study sessions.", price: 10, image: "" },
-      { title: "Bike", description: "Used bike, ideal for commuting around campus.", price: 120, image: "" }
-    ];
+    // const products = [
+    //   { title: "Gaming PC", description: "High-performance gaming PC with RTX 3080.", price: 1499, image: "FrontEnd/Images/gamingpc.png" },
+    //   { title: "iPhone 14 Pro", description: "Brand new iPhone 14 Pro with 256GB storage.", price: 1099, image: "FrontEnd/Images/iphone.png" },
+    //   { title: "Electric Scooter", description: "Fast and efficient electric scooter for city travel.", price: 599, image: "FrontEnd/Images/electricscooter.png" },
+    //   { title: "Sony Headphones", description: "Noise-canceling over-ear headphones with deep bass.", price: 299, image: "FrontEnd/Images/sony.png" },
+    //   { title: "LED Wall Lights", description: "Colorful LED strips to decorate your dorm.", price: 20, image: "FrontEnd/Images/ledwalllights.png" },
+    //   { title: "Parking Pass", description: "Valid on-campus parking pass for the semester.", price: 100, image: "FrontEnd/Images/parkingpass.png" },
+    //   { title: "Dorm Chair", description: "Comfortable chair for your desk or lounge.", price: 30, image: "FrontEnd/Images/dormchair.png" },
+    //   { title: "Laptop", description: "Lightweight laptop, perfect for note-taking and research.", price: 700, image: "FrontEnd/Images/laptop.png" },
+    //   { title: "Mini Fridge", description: "Keep snacks and drinks cool in your dorm.", price: 75, image: "FrontEnd/Images/minifridge.png" },
+    //   { title: "Microwave", description: "Compact microwave for quick dorm meals.", price: 50, image: "FrontEnd/Images/microwave.png" },
+    //   { title: "Textbooks", description: "Various textbooks from core and elective classes.", price: 80, image: "FrontEnd/Images/textbooks.png" },
+    //   { title: "Calculator", description: "Scientific calculator for math and science courses.", price: 15, image: "FrontEnd/Images/calculator.png" },
+    //   { title: "Backpack", description: "Durable backpack with multiple compartments.", price: 25, image: "FrontEnd/Images/backpack.png" },
+    //   { title: "Mechanical Keyboard", description: "Tactile mechanical keyboard for a satisfying typing experience.", price: 40, image: "" },
+    //   { title: "Wireless Mouse", description: "Reliable wireless mouse for everyday use.", price: 20, image: "" },
+    //   { title: "Bean Bag Chair", description: "Cozy bean bag seat, perfect for dorm lounging.", price: 45, image: "" },
+    //   { title: "Gaming Headset", description: "Over-ear headset with microphone for online gaming.", price: 60, image: "" },
+    //   { title: "Monitor", description: "24-inch 1080p monitor, great for gaming or productivity.", price: 120, image: "" },
+    //   { title: "Dorm Lamp", description: "Adjustable desk lamp for late-night study sessions.", price: 10, image: "" },
+    //   { title: "Bike", description: "Used bike, ideal for commuting around campus.", price: 120, image: "" }
+    // ];
 
     // Load products and user dropdown when DOM is ready
-    document.addEventListener("DOMContentLoaded", () => {
-      renderProducts();
+    document.addEventListener("DOMContentLoaded", async () => {
       setupUserIconDropdown();
+
+      try {
+      // 1) Fetch real listings from your backend
+      const res = await fetch('http://localhost:3000/api/listings');
+      if (!res.ok) throw new Error(`Server error: ${res.status}`);
+      const products = await res.json();
+
+      // 2) Pass them to your existing render function
+      renderProducts(products);
+    } catch (err) {
+      console.error('Could not load products:', err);
+      const grid = document.getElementById('product-grid');
+      grid.innerHTML = `<p class="text-danger">Failed to load products. Try again later.</p>`;
+    }
+
     });
 
     // Render all products to the page
-    function renderProducts() {
-      const productGrid = document.getElementById("product-grid");
-      productGrid.innerHTML = "";
+    function renderProducts(items) {
+    const productGrid = document.getElementById("product-grid");
+    productGrid.innerHTML = "";
 
-      products.forEach(product => {
-        const colDiv = document.createElement("div");
-        colDiv.classList.add("col-sm-6", "col-md-4", "col-lg-3", "mb-4");
-
-        colDiv.innerHTML = `
-          <div class="card h-100">
-            <img src="${product.image}" class="card-img-top" alt="${product.title}" />
-            <div class="card-body">
-              <h5 class="card-title">${product.title}</h5>
-              <p class="card-text">${product.description}</p>
-              <p class="text-success">$${product.price}</p>
-              <button class="btn btn-success" onclick="buyNow(
-                '${product.title}',
-                '${product.description}',
-                '${product.price}',
-                '${product.image}'
-              )">Buy Now</button>
-            </div>
+    items.forEach(product => {
+      const colDiv = document.createElement("div");
+      colDiv.classList.add("col-sm-6", "col-md-4", "col-lg-3", "mb-4");
+      colDiv.innerHTML = `
+        <div class="card h-100">
+          <img src="${product.Images?.[0] || product.image || ''}"
+               class="card-img-top"
+               alt="${product.Title || product.title}" />
+          <div class="card-body">
+            <h5 class="card-title">${product.Title || product.title}</h5>
+            <p class="card-text">${product.Description || product.description}</p>
+            <p class="text-success">$${product.Price ?? product.price}</p>
+            <button class="btn btn-success" onclick="buyNow(
+              '${encodeURIComponent(product.Title || product.title)}',
+              '${encodeURIComponent(product.Description || product.description)}',
+              '${product.Price ?? product.price}',
+              '${encodeURIComponent(product.Images?.[0] || product.image || '')}'
+            )">Buy Now</button>
           </div>
-        `;
-        productGrid.appendChild(colDiv);
-      });
-    }
+        </div>
+      `;
+      productGrid.appendChild(colDiv);
+    });
+  }
+
 
 
       // Attach event listeners for login or logout
@@ -212,7 +228,7 @@
 
 
 
-    async function HandleAuth(response) {
+  async function HandleAuth(response) {
   console.log('Google response:', response);
   if (!response || !response.credential) {
     console.error('❌ No Google credential received.');
@@ -255,6 +271,7 @@
 
     // 6) Success!
     const { id } = await res.json();
+    localStorage.setItem('userId', id);
     console.log('✅ Auth success, user id:', id);
 
     localStorage.setItem('isLoggedIn', 'true');

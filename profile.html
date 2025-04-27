@@ -290,19 +290,45 @@
     }
     
     function setupCreateListingForm() {
-      const form = document.getElementById("createListingForm");
-      if (form) {
-        form.addEventListener("submit", (e) => {
-          e.preventDefault();
-          const title = document.getElementById("listingTitle").value;
-          const description = document.getElementById("listingDesc").value;
-          const price = document.getElementById("listingPrice").value;
-          console.log("New Listing Submitted:", { title, description, price });
-          alert("Listing submitted (demo action).");
-          form.reset();
-        });
-      }
+  const form = document.getElementById('createListingForm');
+  if (!form) return;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const title       = document.getElementById('listingTitle').value;
+    const description = document.getElementById('listingDesc').value;
+    const price       = document.getElementById('listingPrice').value;
+    // TODO: after you implement image uploads, replace this:
+    const images      = [];  
+
+    const seller_id   = localStorage.getItem('userId');
+    if (!seller_id) {
+      return alert('You must be signed in to create a listing.');
     }
+
+    try {
+      const res = await fetch('http://localhost:3000/api/listings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, description, price, images, seller_id })
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        return alert('Error: ' + data.message);
+      }
+
+      alert('Listing created! ID=' + data.id);
+      form.reset();
+      // Optionally reload active listings tab…
+    } catch (err) {
+      console.error(err);
+      alert('Network error—please try again.');
+    }
+  });
+}
+
     
     function setupEditProfileForm() {
       const editForm = document.getElementById("editProfileForm");
