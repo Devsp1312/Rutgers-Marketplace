@@ -2,6 +2,9 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 import {
   connectToDB,
   addUser,
@@ -16,6 +19,41 @@ dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+const uploadsDir = path.join(process.cwd(), 'uploads');
+if (!fs.existsSync(uploadsDir)){
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    // Create unique filename with original extension
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    cb(null, file.fieldname + '-' + uniqueSuffix + ext);
+  }
+});
+
+// File filter to accept only images
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Not an image! Please upload only images.'), false);
+  }
+};
+
+const upload = multer({ 
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit
+  }
+});
 
 //Connect to MongoDB
 connectToDB()
@@ -63,25 +101,36 @@ app.post('/api/user', async (req, res) => {
 
 
 // This is for creating a listing
-app.post('/api/listings', async (req, res) => {
-  const { title, description, price, images, seller_id } = req.body;
-  if (!seller_id) {
-    return res.status(400).json({ message: 'Missing seller_id' });
-  }
-  if (!title || !description || price == null) {
-    return res.status(400).json({ message: 'Missing listing fields' });
-  }
-
+app.post('/api/listings', upload.array('images', 5), async (req, res) => {
   try {
-    // Creates the listing and also appends it to the user’s Listings array
+    const { title, description, price, seller_id } = req.body;
+    
+    if (!seller_id) {
+      return res.status(400).json({ message: 'Missing seller_id' });
+    }
+    if (!title || !description || price == null) {
+      return res.status(400).json({ message: 'Missing listing fields' });
+    }
+
+    // Process uploaded files
+    const imageUrls = [];
+    if (req.files && req.files.length > 0) {
+      req.files.forEach(file => {
+        // Store relative path to access via /uploads/filename
+        imageUrls.push(`/uploads/${file.filename}`);
+      });
+    }
+
+    // Creates the listing and also appends it to the user's Listings array
     const listingId = await addListing(
       title,
       description,
       Number(price),
       seller_id,
-      images || []
+      imageUrls
     );
-    return res.status(200).json({ id: listingId });
+    
+    return res.status(200).json({id: listingId});
   } catch (err) {
     console.error('/api/listings error:', err);
     return res.status(500).json({ message: 'Could not create listing' });

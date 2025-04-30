@@ -287,7 +287,7 @@
     const description = document.getElementById('listingDesc').value;
     const price       = document.getElementById('listingPrice').value;
     // TODO: after you implement image uploads, replace this:
-    const images      = [];  
+    const images      = document.getElementById('listingImage').files;  
 
     const seller_id   = localStorage.getItem('userId');
     if (!seller_id) {
@@ -295,11 +295,25 @@
     }
 
     try {
+      // Create FormData object to handle file uploads
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('description', description);
+      formData.append('price', price);
+      formData.append('seller_id', seller_id);
+      
+      // Add all selected images to the form data
+      for (let i = 0; i < images.length; i++) {
+        formData.append('images', images[i]);
+      }
+
       const res = await fetch('http://localhost:3000/api/listings', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, description, price, images, seller_id })
+        // Don't set Content-Type header - the browser will set it automatically
+        // with the correct boundary for multipart/form-data
+        body: formData
       });
+
       const data = await res.json();
 
       if (!res.ok) {
