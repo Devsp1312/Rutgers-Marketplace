@@ -135,10 +135,7 @@
         <div class="tab-pane fade show active" id="active-listings" role="tabpanel" aria-labelledby="active-listings-tab">
           <h5>Active Listings</h5>
           <p>Your current items for sale are displayed here.</p>
-          <div class="row">
-            <div class="col-md-4 mb-2">Item 1</div>
-            <div class="col-md-4 mb-2">Item 2</div>
-            <div class="col-md-4 mb-2">Item 3</div>
+          <div class="row" id="activeListingsContainer">
           </div>
         </div>
         <!-- Wishlist Tab -->
@@ -214,6 +211,7 @@
     document.addEventListener("DOMContentLoaded", () => {
       setupNavbar();
       setupProfilePage();
+      loadActiveListings();
       setupCreateListingForm();
       setupEditProfileForm();
     });
@@ -276,7 +274,7 @@
       }
     }
     
-    function setupCreateListingForm() {
+  function setupCreateListingForm() {
   const form = document.getElementById('createListingForm');
   if (!form) return;
 
@@ -286,7 +284,6 @@
     const title       = document.getElementById('listingTitle').value;
     const description = document.getElementById('listingDesc').value;
     const price       = document.getElementById('listingPrice').value;
-    // TODO: after you implement image uploads, replace this:
     const images      = document.getElementById('listingImage').files;  
 
     const seller_id   = localStorage.getItem('userId');
@@ -295,25 +292,20 @@
     }
 
     try {
-      // Create FormData object to handle file uploads
+      // Build the multipart form payload
       const formData = new FormData();
       formData.append('title', title);
       formData.append('description', description);
       formData.append('price', price);
       formData.append('seller_id', seller_id);
-      
-      // Add all selected images to the form data
       for (let i = 0; i < images.length; i++) {
         formData.append('images', images[i]);
       }
 
       const res = await fetch('http://localhost:3000/api/listings', {
         method: 'POST',
-        // Don't set Content-Type header - the browser will set it automatically
-        // with the correct boundary for multipart/form-data
         body: formData
       });
-
       const data = await res.json();
 
       if (!res.ok) {
@@ -322,7 +314,11 @@
 
       alert('Listing created! ID=' + data.id);
       form.reset();
-      // Optionally reload active listings tab…
+
+      // Refresh the Active Listings tab
+      if (typeof loadActiveListings === 'function') {
+        loadActiveListings();
+      }
     } catch (err) {
       console.error(err);
       alert('Network error—please try again.');
@@ -330,6 +326,53 @@
   });
 }
 
+async function loadActiveListings() {
+    const userId = localStorage.getItem('userId');
+    const container = document.getElementById('activeListingsContainer');
+    container.innerHTML = ''; // clear placeholders
+
+    if (!userId) {
+      container.innerHTML = `<p class="text-muted">Log in to see your listings.</p>`;
+      return;
+    }
+
+    try {
+      const res = await fetch(`http://localhost:3000/api/users/${userId}/listings`);
+      if (!res.ok) throw new Error(`Status ${res.status}`);
+      const listings = await res.json();
+
+      if (listings.length === 0) {
+        container.innerHTML = `<p class="text-muted">You have no active listings.</p>`;
+        return;
+      }
+
+      listings.forEach(item => {
+        const col = document.createElement('div');
+        col.className = 'col-md-4 mb-3';
+        col.innerHTML = `
+          <div class="card h-100">
+            <img 
+              src="${item.Images?.[0] || '/path/to/placeholder.png'}" 
+              class="card-img-top" 
+              alt="${item.Title}" 
+              style="object-fit:cover; height:150px;"
+            />
+            <div class="card-body p-2">
+              <h6 class="card-title mb-1">${item.Title}</h6>
+              <p class="mb-1 text-success">$${item.Price}</p>
+              <a href="product.html?id=${item._id}" class="btn btn-sm btn-outline-primary w-100">
+                View
+              </a>
+            </div>
+          </div>
+        `;
+        container.appendChild(col);
+      });
+    } catch (err) {
+      console.error('Couldn’t load active listings', err);
+      container.innerHTML = `<p class="text-danger">Failed to load your listings.</p>`;
+    }
+  }
     
     function setupEditProfileForm() {
       const editForm = document.getElementById("editProfileForm");

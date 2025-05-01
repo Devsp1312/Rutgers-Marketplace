@@ -11,7 +11,8 @@ import {
   checkUser,
   getUser,
   addListing,
-  getAllListings
+  getAllListings,
+  getListingsByUser
 } from './Database/db_funcs.js';
 
 dotenv.config();
@@ -147,6 +148,31 @@ app.get('/api/listings', async (req, res) => {
     res.status(500).json({ message: 'Could not fetch listings' });
   }
 });
+
+//import { getListingsByUser } from './Database/db_funcs.js';
+
+// GET all listings for one user
+app.get('/api/users/:userId/listings', async (req, res) => {
+  try {
+    const listings = await getListingsByUser(req.params.userId);
+    return res.json(listings);
+  } catch(err) {
+    console.error('GET /api/users/:userId/listings failed', err);
+    return res.status(500).json({ message: 'Could not fetch user listings' });
+  }
+});
+
+app.get('/api/listings/:id', async (req, res) => {
+  try {
+    const listing = await getListing(req.params.id);
+    if (!listing) return res.status(404).json({ message: "Not found" });
+    res.json(listing);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 
 
 const PORT = process.env.PORT || 3000;

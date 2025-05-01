@@ -186,3 +186,12 @@ export async function getAllListings() {
     }
   }
   
+  export async function getListingsByUser(userId) {
+    try {
+      return await Listing.find({ Seller_id: userId });
+    } catch(err) {
+      console.error('Error in getListingsByUser:', err);
+      throw err;
+    }
+  }
+  
