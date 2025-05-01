@@ -132,3 +132,14 @@ button {
     height: 200px;
     object-fit: cover;
 }
+
+/* Google Sign In Button Styling */
+#g_id_signin {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.dropdown-menu {
+  min-width: 240px;
+}

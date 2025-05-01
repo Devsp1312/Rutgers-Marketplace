@@ -4,55 +4,37 @@
   <meta charset="UTF-8" />
   <title>Marketplace</title>
 
+  <!-- Bootstrap CSS -->
   <link 
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" 
     rel="stylesheet"
   />
-
   <link rel="stylesheet" href="styles.css" />
 
-  <!-- Google Sign-In SDKs -->
+  <!-- Google Identity Services + JWT decode -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="https://apis.google.com/js/api.js" async></script>
+  <script src="https://apis.google.com/js/api.js" async defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
 </head>
-
-<!-- Autocomplete script module, for search bar -->
-<script type="module">
-  import Autocomplete from './Autocomplete.js';
-  
-  document.addEventListener('DOMContentLoaded', () => {
-    new Autocomplete('.search-input', products);
-  });
-</script>
-
 <body>
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-custom sticky-top mb-3">
     <div class="container-fluid">
-      <!-- Logo and Site Title -->
       <a class="navbar-brand d-flex align-items-center" href="index.html">
         <img src="FrontEnd/Images/RuMarketplaceLogo.png" alt="RU Marketplace" class="logo-img" />
         <span class="ms-2 fw-bold">RU-Marketplace</span>
       </a>
 
-      <!-- Search bar and Filter -->
       <div class="d-flex align-items-center">
         <div class="input-group me-3">
-          <input type="text" class="form-control search-input" placeholder="Search...">
+          <input type="text" class="form-control search-input" placeholder="Search…">
           <button class="btn btn-outline-light">Filter</button>
         </div>
       </div>
 
-      <!-- Right side icons: which are Wishlist and User -->
       <div class="d-flex align-items-center ms-auto me-3">
-        <!-- Wishlist -->
         <div class="dropdown me-3">
-          <button 
-            class="icon-btn dropdown-toggle" 
-            type="button" 
-            data-bs-toggle="dropdown" 
-            aria-expanded="false"
-            id="wishlistBtn">
+          <button class="icon-btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
             <img src="FrontEnd/Images/wishlisticon.png" alt="Wishlist Icon" />
           </button>
           <ul class="dropdown-menu dropdown-menu-end" id="wishlistDropdownMenu">
@@ -60,23 +42,20 @@
           </ul>
         </div>
 
-        <!-- User Menu -->
         <div class="dropdown">
-          <button 
-            class="icon-btn dropdown-toggle" 
-            type="button" 
-            data-bs-toggle="dropdown" 
-            aria-expanded="false"
-            id="userIconBtn">
+          <button class="icon-btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
             <img src="FrontEnd/Images/user.png" alt="User Icon" />
-            <span id="greeting" class="greeting"></span>
+            <span id="greeting" class="ms-1"></span>
           </button>
-          <ul class="dropdown-menu dropdown-menu-end" id="userDropdownMenu"></ul>
+          <ul class="dropdown-menu dropdown-menu-end" id="userDropdownMenu">
+            <!-- populated by updateUserMenu() -->
+          </ul>
         </div>
       </div>
     </div>
   </nav>
 
+  <!-- Products -->
   <div class="container">
     <div class="row" id="product-grid"></div>
   </div>
@@ -85,201 +64,136 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-    // Product List (static for now)
+    // 1) Helper to render user menu on every load
+    function updateUserMenu() {
+      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+      const username = localStorage.getItem('username') || '';
+      const greetingEl = document.getElementById('greeting');
+      const menu = document.getElementById('userDropdownMenu');
 
-    // const products = [
-    //   { title: "Gaming PC", description: "High-performance gaming PC with RTX 3080.", price: 1499, image: "FrontEnd/Images/gamingpc.png" },
-    //   { title: "iPhone 14 Pro", description: "Brand new iPhone 14 Pro with 256GB storage.", price: 1099, image: "FrontEnd/Images/iphone.png" },
-    //   { title: "Electric Scooter", description: "Fast and efficient electric scooter for city travel.", price: 599, image: "FrontEnd/Images/electricscooter.png" },
-    //   { title: "Sony Headphones", description: "Noise-canceling over-ear headphones with deep bass.", price: 299, image: "FrontEnd/Images/sony.png" },
-    //   { title: "LED Wall Lights", description: "Colorful LED strips to decorate your dorm.", price: 20, image: "FrontEnd/Images/ledwalllights.png" },
-    //   { title: "Parking Pass", description: "Valid on-campus parking pass for the semester.", price: 100, image: "FrontEnd/Images/parkingpass.png" },
-    //   { title: "Dorm Chair", description: "Comfortable chair for your desk or lounge.", price: 30, image: "FrontEnd/Images/dormchair.png" },
-    //   { title: "Laptop", description: "Lightweight laptop, perfect for note-taking and research.", price: 700, image: "FrontEnd/Images/laptop.png" },
-    //   { title: "Mini Fridge", description: "Keep snacks and drinks cool in your dorm.", price: 75, image: "FrontEnd/Images/minifridge.png" },
-    //   { title: "Microwave", description: "Compact microwave for quick dorm meals.", price: 50, image: "FrontEnd/Images/microwave.png" },
-    //   { title: "Textbooks", description: "Various textbooks from core and elective classes.", price: 80, image: "FrontEnd/Images/textbooks.png" },
-    //   { title: "Calculator", description: "Scientific calculator for math and science courses.", price: 15, image: "FrontEnd/Images/calculator.png" },
-    //   { title: "Backpack", description: "Durable backpack with multiple compartments.", price: 25, image: "FrontEnd/Images/backpack.png" },
-    //   { title: "Mechanical Keyboard", description: "Tactile mechanical keyboard for a satisfying typing experience.", price: 40, image: "" },
-    //   { title: "Wireless Mouse", description: "Reliable wireless mouse for everyday use.", price: 20, image: "" },
-    //   { title: "Bean Bag Chair", description: "Cozy bean bag seat, perfect for dorm lounging.", price: 45, image: "" },
-    //   { title: "Gaming Headset", description: "Over-ear headset with microphone for online gaming.", price: 60, image: "" },
-    //   { title: "Monitor", description: "24-inch 1080p monitor, great for gaming or productivity.", price: 120, image: "" },
-    //   { title: "Dorm Lamp", description: "Adjustable desk lamp for late-night study sessions.", price: 10, image: "" },
-    //   { title: "Bike", description: "Used bike, ideal for commuting around campus.", price: 120, image: "" }
-    // ];
-
-    // Load products and user dropdown when DOM is ready
-    document.addEventListener("DOMContentLoaded", async () => {
-      setupUserIconDropdown();
-
-      try {
-      // 1) Fetch products from db
-      const res = await fetch('http://localhost:3000/api/listings');
-      if (!res.ok) throw new Error(`Server error: ${res.status}`);
-      const products = await res.json();
-
-      // 2) Pass to render function
-      renderProducts(products);
-    } catch (err) {
-      console.error('Could not load products:', err);
-      const grid = document.getElementById('product-grid');
-      grid.innerHTML = `<p class="text-danger">Failed to load products. Try again later.</p>`;
-    }
-
-    });
-
-    // Render products
-    function renderProducts(items) {
-      const productGrid = document.getElementById("product-grid");
-      productGrid.innerHTML = "";
-    
-      const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-    
-      items.forEach(product => {
-        const colDiv = document.createElement("div");
-        colDiv.classList.add("col-sm-6", "col-md-4", "col-lg-3", "mb-4");
-    
-        colDiv.innerHTML = `
-          <div class="card h-100">
-            <img src="${product.Images?.[0] || product.image || ''}" class="card-img-top" alt="${product.Title || product.title}" />
-            <div class="card-body">
-              <h5 class="card-title">${product.Title || product.title}</h5>
-              <p class="card-text">${product.Description || product.description}</p>
-              <p class="text-success">$${product.Price ?? product.price}</p>
-              ${
-                isLoggedIn
-                  ? `<button class="btn btn-success" onclick="buyNow(
-                      '${encodeURIComponent(product.Title || product.title)}',
-                      '${encodeURIComponent(product.Description || product.description)}',
-                      '${product.Price ?? product.price}',
-                      '${encodeURIComponent(product.Images?.[0] || product.image || '')}'
-                    )">Buy Now</button>`
-                  : ""
-              }
-            </div>
-          </div>
-        `;
-        productGrid.appendChild(colDiv);
-      });
-    }
-    
-
-
-      // Attach event listeners for login or logout
-      const loginLink = document.getElementById("loginLink");
-      if (loginLink) {
-        loginLink.addEventListener("click", () => {
-          window.location.href = "signin.html";
-        });
-      }
-    
-    // Dropdown for Sign-In or Profile/Logout
-    function setupUserIconDropdown() {
-      const greetingEl = document.getElementById("greeting");
-      const userDropdownMenu = document.getElementById("userDropdownMenu");
-
-      const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-      const username = localStorage.getItem("username") || "";
-
-      userDropdownMenu.innerHTML = "";
-
-      if (isLoggedIn && username) {
+      if (isLoggedIn) {
         greetingEl.textContent = `Hello, ${username}!`;
-        userDropdownMenu.innerHTML = `
+        menu.innerHTML = `
           <li><a class="dropdown-item" href="profile.html">Profile</a></li>
           <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" id="logoutLink" href="#">Logout</a></li>
+          <li><a class="dropdown-item" href="#" id="logoutLink">Logout</a></li>
         `;
+        document.getElementById('logoutLink')
+                .addEventListener('click', () => {
+                  localStorage.clear();
+                  location.reload();
+                });
       } else {
-        greetingEl.textContent = "";
-        userDropdownMenu.innerHTML = `
-          <div id="g_id_onload"
-               data-client_id= "922908217557-2osq9upebgcpke4jl560hqbl77eodu5i.apps.googleusercontent.com"
-               data-context="signin"
-               data-ux_mode="popup"
-               data-callback="HandleAuth"
-               data-auto_prompt="false"></div>
-
-          <div class="g_id_signin"
-               data-type="standard"
-               data-shape="rectangular"
-               data-theme="outline"
-               data-text="signin"
-               data-size="medium"
-               data-logo_alignment="left"></div>
+        greetingEl.textContent = '';
+        menu.innerHTML = `
+          <li class="px-3 py-2">
+            <div id="g_id_signin"></div>
+          </li>
         `;
-      }
-
-      const logoutLink = document.getElementById("logoutLink");
-      if (logoutLink) {
-        logoutLink.addEventListener("click", () => {
-          localStorage.removeItem("isLoggedIn");
-          localStorage.removeItem("username");
-          location.reload();
-        });
+        // render GSI button
+        google.accounts.id.renderButton(
+          document.getElementById('g_id_signin'),
+          { theme: 'outline', size: 'small' }
+        );
       }
     }
 
+    // 2) Initialize GSI and then render user menu
+    window.onload = () => {
+      google.accounts.id.initialize({
+        client_id: '922908217557-2osq9upebgcpke4jl560hqbl77eodu5i.apps.googleusercontent.com',
+        callback: HandleAuth,
+        ux_mode: 'popup',
+        cancel_on_tap_outside: false
+      });
+      updateUserMenu();
+    };
 
-// function for user authentication 
-  async function HandleAuth(response) {
-  console.log('Google response:', response);
-  if (!response || !response.credential) {
-    console.error('No Google credential received.');
-    return;
-  }
-
-  //Decode the users info
-  const { name, email: rawEmail } = jwt_decode(response.credential);
-  const normalizedEmail = (rawEmail || '').trim().toLowerCase();
-  console.log('→ Decoded user:', name, normalizedEmail);
-
-  try {
-    //Call the backend at server.js
-    const res = await fetch('http://localhost:3000/api/user', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email: normalizedEmail })
+    // 3) Fetch & render products
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const res = await fetch('http://localhost:3000/api/listings');
+        if (!res.ok) throw new Error(`Server error: ${res.status}`);
+        const products = await res.json();
+        renderProducts(products);
+      } catch (err) {
+        console.error(err);
+        document.getElementById('product-grid').innerHTML =
+          `<p class="text-danger">Failed to load products.</p>`;
+      }
     });
 
-    //Handle forbidden results
-    if (res.status === 403) {
-      const { message } = await res.json();
-      alert(message);
-      return;
+    function renderProducts(items) {
+      const grid = document.getElementById('product-grid');
+      grid.innerHTML = '';
+      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+
+      items.forEach(prod => {
+        const col = document.createElement('div');
+        col.className = 'col-sm-6 col-md-4 col-lg-3 mb-4';
+        col.innerHTML = `
+          <div class="card h-100">
+            <img src="${prod.Images?.[0]||prod.image||''}"
+                 class="card-img-top"
+                 alt="${prod.Title||prod.title}" />
+            <div class="card-body">
+              <h5 class="card-title">${prod.Title||prod.title}</h5>
+              <p class="card-text">${prod.Description||prod.description}</p>
+              <p class="text-success">$${prod.Price||prod.price}</p>
+              ${isLoggedIn
+                ? `<button class="btn btn-success"
+                    onclick="buyNow(
+                      '${encodeURIComponent(prod.Title||prod.title)}',
+                      '${encodeURIComponent(prod.Description||prod.description)}',
+                      '${prod.Price||prod.price}',
+                      '${encodeURIComponent(prod.Images?.[0]||prod.image||'')}'
+                    )">
+                    Buy Now
+                  </button>`
+                : ``
+              }
+            </div>
+          </div>`;
+        grid.appendChild(col);
+      });
     }
 
-    //Handle other errors
-    if (!res.ok) {
-      const err = await res.json();
-      console.error('Backend error:', err);
-      alert(err.message || 'Server error');
-      return;
+    // 4) Google callback
+    async function HandleAuth(response) {
+      if (!response.credential) return;
+      const { name, email: rawEmail } = jwt_decode(response.credential);
+      const email = rawEmail.trim().toLowerCase();
+
+      try {
+        const res = await fetch('http://localhost:3000/api/user', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ name, email })
+        });
+        if (res.status === 403) {
+          alert((await res.json()).message);
+          return;
+        }
+        if (!res.ok) throw await res.json();
+
+        const { id } = await res.json();
+        localStorage.setItem('userId', id);
+        localStorage.setItem('username', name);
+        localStorage.setItem('userEmail', email);
+        localStorage.setItem('isLoggedIn', 'true');
+        // now update the menu & products
+        updateUserMenu();
+        renderProducts(await (await fetch('http://localhost:3000/api/listings')).json());
+      } catch (err) {
+        console.error(err);
+        alert(err.message||'Auth failed');
+      }
     }
 
-    //Successful authentication
-    const { id } = await res.json();
-    localStorage.setItem('userId', id);
-    console.log('Auth success, user id:', id);
-
-    localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('username', name);
-    localStorage.setItem('userEmail', normalizedEmail);
-
-    location.reload();
-  } catch (err) {
-    console.error('Network or fetch error:', err);
-    alert('Network error—please try again.');
-  }
-}
-
-
-    // Redirect to product details page
+    // 5) Buy-Now redirect
     function buyNow(title, description, price, image) {
-      const query = new URLSearchParams({ title, description, price, image }).toString();
-      window.location.href = `Product.html?${query}`;
+      const q = new URLSearchParams({ title, description, price, image }).toString();
+      window.location.href = `Product.html?${q}`;
     }
   </script>
 </body>
