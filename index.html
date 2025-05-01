@@ -15,6 +15,10 @@
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://apis.google.com/js/api.js" async defer></script>
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+  <script type="module">
+    import Autocomplete from './Autocomplete.js';
+    window.Autocomplete = Autocomplete;
+  </script>
 </head>
 <body>
   <!-- Navbar -->
@@ -79,8 +83,11 @@
           <li><a class="dropdown-item" href="#" id="logoutLink">Logout</a></li>
         `;
         document.getElementById('logoutLink')
-                .addEventListener('click', () => {
+                .addEventListener('click', async () => {
                   localStorage.clear();
+                  // Reinitialize autocomplete after logout
+                  const products = await (await fetch('http://localhost:3000/api/listings')).json();
+                  new Autocomplete('.search-input', products);
                   location.reload();
                 });
       } else {
@@ -116,6 +123,9 @@
         if (!res.ok) throw new Error(`Server error: ${res.status}`);
         const products = await res.json();
         renderProducts(products);
+        
+        // Initialize autocomplete with products
+        const autocomplete = new Autocomplete('.search-input', products);
       } catch (err) {
         console.error(err);
         document.getElementById('product-grid').innerHTML =
@@ -181,9 +191,12 @@
         localStorage.setItem('username', name);
         localStorage.setItem('userEmail', email);
         localStorage.setItem('isLoggedIn', 'true');
-        // now update the menu & products
+        
+        // now update the menu, products & reinitialize autocomplete
         updateUserMenu();
-        renderProducts(await (await fetch('http://localhost:3000/api/listings')).json());
+        const products = await (await fetch('http://localhost:3000/api/listings')).json();
+        renderProducts(products);
+        new Autocomplete('.search-input', products); // Reinitialize autocomplete
       } catch (err) {
         console.error(err);
         alert(err.message||'Auth failed');

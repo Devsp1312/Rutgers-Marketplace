@@ -1,9 +1,25 @@
 export default class Autocomplete {
   constructor(inputSelector, products) {
     this.input = document.querySelector(inputSelector);
-    this.inputContainer = this.input.closest('.input-group');
+    if (!this.input) {
+      console.error(`Input element with selector "${inputSelector}" not found`);
+      return;
+    }
 
-    // The parent must be positioned relatively
+    // Clean up any existing dropdown from previous instance
+    const existingDropdown = this.input.closest('.input-group').querySelector('.autocomplete-dropdown');
+    if (existingDropdown) {
+      existingDropdown.remove();
+    }
+
+    // Check if user is logged in
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    
+    // Update input state based on login
+    this.input.disabled = !isLoggedIn;
+    this.input.placeholder = isLoggedIn ? "Search..." : "Please login to search";
+
+    this.inputContainer = this.input.closest('.input-group');
     this.inputContainer.style.position = 'relative';
 
     this.products = products;
@@ -17,15 +33,24 @@ export default class Autocomplete {
     this.dropdown.style.zIndex = '1000';
     this.inputContainer.appendChild(this.dropdown);
 
-    this.input.addEventListener('input', this.handleInput.bind(this));
-    this.input.addEventListener('blur', this.handleBlur.bind(this));
+    // Remove any existing event listeners
+    const newInput = this.input.cloneNode(true);
+    this.input.parentNode.replaceChild(newInput, this.input);
+    this.input = newInput;
+
+    if (isLoggedIn) {
+      this.input.addEventListener('input', this.handleInput.bind(this));
+      this.input.addEventListener('blur', this.handleBlur.bind(this));
+    }
   }
 
   handleInput() {
     const searchTerm = this.input.value.toLowerCase();
-    const filtered = this.products.filter(p =>
-      p.title.toLowerCase().includes(searchTerm)
-    );
+    const filtered = this.products.filter(p => {
+      // Handle both Title and title properties
+      const productTitle = (p.Title || p.title || '').toLowerCase();
+      return productTitle.includes(searchTerm);
+    });
 
     // Clear old suggestions
     this.dropdown.innerHTML = '';
@@ -41,23 +66,24 @@ export default class Autocomplete {
       const a = document.createElement('a');
       a.href = '#';
       a.classList.add('dropdown-item');
-      const matchIndex = product.title.toLowerCase().indexOf(searchTerm);
+      
+      // Handle both Title and title properties
+      const productTitle = product.Title || product.title;
+      const matchIndex = productTitle.toLowerCase().indexOf(searchTerm);
+      
       if (matchIndex !== -1) {
-        const before = product.title.slice(0, matchIndex);
-        const match = product.title.slice(
-          matchIndex,
-          matchIndex + searchTerm.length
-        );
-        const after = product.title.slice(matchIndex + searchTerm.length);
+        const before = productTitle.slice(0, matchIndex);
+        const match = productTitle.slice(matchIndex, matchIndex + searchTerm.length);
+        const after = productTitle.slice(matchIndex + searchTerm.length);
         a.innerHTML = `${before}<strong>${match}</strong>${after}`;
       } else {
-        a.textContent = product.title;
+        a.textContent = productTitle;
       }
 
       // On suggestion click
       a.addEventListener('mousedown', (e) => {
         e.preventDefault();
-        this.input.value = product.title;
+        this.input.value = productTitle;
         this.dropdown.style.display = 'none';
         
         // Navigate to product details page
@@ -79,12 +105,11 @@ export default class Autocomplete {
   }
 
   openProductDetails(product) {
-    // Using the buyNow function logic to open product details
     const query = new URLSearchParams({
-      title: product.title,
-      description: product.description,
-      price: product.price,
-      image: product.image
+      title: product.Title || product.title,
+      description: product.Description || product.description,
+      price: product.Price || product.price,
+      image: (product.Images?.[0] || product.image || '')
     }).toString();
     
     window.location.href = `Product.html?${query}`;
