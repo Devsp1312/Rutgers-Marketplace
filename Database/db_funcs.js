@@ -69,6 +69,28 @@ const UserSchema = new Schema({
 }, {timestamps: true});
 
 
+const ReportSchema = new Schema({
+  listingId:  { type: Schema.Types.ObjectId, ref: 'Listing', required: true },
+  reporterId: { type: Schema.Types.ObjectId, ref: 'User',    required: true },
+  reason:     { type: String, required: true },
+  details:    { type: String }        // for “Other” box
+}, { timestamps: true });
+
+const Report = mongoose.model('Report', ReportSchema);
+
+export async function addReport(listingId, reporterId, reason, details = '') {
+  const rpt = new Report({ listingId, reporterId, reason, details });
+  const saved = await rpt.save();
+  console.log(`New report ${saved._id} for listing ${listingId}`);
+  return saved._id;
+}
+
+export async function getAllReports() {
+  return Report
+    .find()
+    .populate('listingId', 'Title')    // bring back the title
+    .populate('reporterId', 'Name Email');
+}
 const Listing = mongoose.model('Listing', ListingSchema);
 const User = mongoose.model('User', UserSchema);
 

@@ -143,10 +143,11 @@
               ${isLoggedIn
                 ? `<button class="btn btn-success"
                     onclick="buyNow(
-                      '${encodeURIComponent(prod.Title||prod.title)}',
-                      '${encodeURIComponent(prod.Description||prod.description)}',
+                      '${prod._id}',
+                      '${(prod.Title||prod.title)}',
+                      '${(prod.Description||prod.description)}',
                       '${prod.Price||prod.price}',
-                      '${encodeURIComponent(prod.Images?.[0]||prod.image||'')}'
+                      '${(prod.Images?.[0]||prod.image||'')}'
                     )">
                     Buy Now
                   </button>`
@@ -191,10 +192,13 @@
     }
 
     // 5) Buy-Now redirect
-    function buyNow(title, description, price, image) {
-      const q = new URLSearchParams({ title, description, price, image }).toString();
-      window.location.href = `Product.html?${q}`;
-    }
+    function buyNow(id, title, description, price, image) {
+  const q = new URLSearchParams({ 
+    id, title, description, price, image 
+  }).toString();
+  window.location.href = `Product.html?${q}`;
+}
+
   </script>
 </body>
 </html>

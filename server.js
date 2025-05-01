@@ -12,7 +12,9 @@ import {
   getUser,
   addListing,
   getAllListings,
-  getListingsByUser
+  getListingsByUser,
+  addReport, 
+  getAllReports
 } from './Database/db_funcs.js';
 
 dotenv.config();
@@ -173,6 +175,30 @@ app.get('/api/listings/:id', async (req, res) => {
   }
 });
 
+app.post('/api/reports', async (req, res) => {
+  const { listingId, reporterId, reason, details } = req.body;
+  if (!listingId || !reporterId || !reason) {
+    return res.status(400).json({ message: 'Missing report fields' });
+  }
+  try {
+    const id = await addReport(listingId, reporterId, reason, details);
+    res.json({ id });
+  } catch (err) {
+    console.error('/api/reports error', err);
+    res.status(500).json({ message: 'Could not save report' });
+  }
+});
+
+// (Optional) Fetch all reports for admin dashboard
+app.get('/api/reports', async (req, res) => {
+  try {
+    const reports = await getAllReports();
+    res.json(reports);
+  } catch (err) {
+    console.error('GET /api/reports failed', err);
+    res.status(500).json({ message: 'Could not fetch reports' });
+  }
+});
 
 
 const PORT = process.env.PORT || 3000;

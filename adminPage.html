@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Admin Dashboard (Simulated)</title>
+  <title>Admin Dashboard</title>
   <!-- Bootstrap CSS -->
   <link 
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" 
@@ -11,34 +11,19 @@
 </head>
 <body>
   <div class="container mt-4">
-    <h1>Admin Dashboard (Simulated)</h1>
+    <h1>Admin Dashboard</h1>
 
-    <!-- Nav Tabs -->
+    <!-- Only the Reports tab is enabled -->
     <ul class="nav nav-tabs" id="adminTabs" role="tablist">
       <li class="nav-item" role="presentation">
         <button 
           class="nav-link active" 
-          id="users-tab" 
-          data-bs-toggle="tab" 
-          data-bs-target="#users" 
-          type="button" 
-          role="tab" 
-          aria-controls="users" 
-          aria-selected="true"
-        >
-          Users
-        </button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button 
-          class="nav-link" 
           id="reports-tab" 
           data-bs-toggle="tab" 
           data-bs-target="#reports" 
-          type="button" 
-          role="tab" 
+          type="button" role="tab"
           aria-controls="reports" 
-          aria-selected="false"
+          aria-selected="true"
         >
           Reports
         </button>
@@ -46,31 +31,9 @@
     </ul>
 
     <div class="tab-content mt-3" id="adminTabsContent">
-      <!-- Users Tab -->
-      <div 
-        class="tab-pane fade show active" 
-        id="users" 
-        role="tabpanel" 
-        aria-labelledby="users-tab"
-      >
-        <h3>All Users</h3>
-        <table class="table table-bordered" id="usersTable">
-          <thead>
-            <tr>
-              <th>User ID</th>
-              <th>Name</th>
-              <th>Role</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Populated by JS -->
-          </tbody>
-        </table>
-      </div>
-
       <!-- Reports Tab -->
       <div 
-        class="tab-pane fade" 
+        class="tab-pane fade show active" 
         id="reports" 
         role="tabpanel" 
         aria-labelledby="reports-tab"
@@ -80,9 +43,9 @@
           <thead>
             <tr>
               <th>Report ID</th>
-              <th>Listing ID</th>
               <th>Reason</th>
-              <th>Date</th>
+              <th>Created At</th>
+              <th>View Listing</th>
             </tr>
           </thead>
           <tbody>
@@ -98,80 +61,61 @@
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
   ></script>
 
-  <!-- Inline JS: Hardcoded data + rendering logic -->
   <script>
-    // 1) Hardcoded user data (simulated)
-    const users = [
-      { userId: 1, name: "Alice", role: "buyer" },
-      { userId: 2, name: "Bob", role: "seller" },
-      { userId: 3, name: "Carol", role: "admin" },
-      { userId: 4, name: "Dave", role: "buyer" }
-    ];
+    async function loadReports() {
+      try {
+        const res = await fetch('http://localhost:3000/api/reports');
+        if (!res.ok) throw new Error(`Error: ${res.status}`);
+        const reports = await res.json();
+        renderReports(reports);
+      } catch (err) {
+        console.error('Could not load reports:', err);
+        document.querySelector('#reportsTable tbody').innerHTML =
+          `<tr><td colspan="4" class="text-danger">Failed to load reports.</td></tr>`;
+      }
+    }
 
-    // 2) Hardcoded report data (simulated)
-    const reports = [
-      { reportId: 101, listingId: 50, reason: "Spam listing", date: "2025-03-20" },
-      { reportId: 102, listingId: 27, reason: "Offensive content", date: "2025-03-21" },
-      { reportId: 103, listingId: 62, reason: "Wrong category", date: "2025-03-22" }
-    ];
+    function renderReports(reports) {
+      const tbody = document.querySelector('#reportsTable tbody');
+      tbody.innerHTML = '';
 
-    // 3) Render users into #usersTable
-    function renderUsers() {
-      const tbody = document.querySelector("#usersTable tbody");
-      tbody.innerHTML = ""; // Clear existing
+      if (!reports.length) {
+        tbody.innerHTML = `<tr><td colspan="4">No reports found.</td></tr>`;
+        return;
+      }
 
-      users.forEach(user => {
-        const row = document.createElement("tr");
+      reports.forEach(r => {
+        const tr = document.createElement('tr');
 
-        const userIdCell = document.createElement("td");
-        userIdCell.textContent = user.userId;
-        row.appendChild(userIdCell);
+        // Report ID
+        const idCell = document.createElement('td');
+        idCell.textContent = r._id;
+        tr.appendChild(idCell);
 
-        const nameCell = document.createElement("td");
-        nameCell.textContent = user.name;
-        row.appendChild(nameCell);
+        // Reason
+        const reasonCell = document.createElement('td');
+        reasonCell.textContent = r.reason;
+        tr.appendChild(reasonCell);
 
-        const roleCell = document.createElement("td");
-        roleCell.textContent = user.role;
-        row.appendChild(roleCell);
+        // Created At
+        const dateCell = document.createElement('td');
+        dateCell.textContent = new Date(r.createdAt).toLocaleString();
+        tr.appendChild(dateCell);
 
-        tbody.appendChild(row);
+        // View Listing link
+        const viewCell = document.createElement('td');
+        const link = document.createElement('a');
+        link.href = `Product.html?id=${r.listingId}`;
+        link.textContent = 'View';
+        link.className = 'btn btn-sm btn-outline-primary';
+        viewCell.appendChild(link);
+        tr.appendChild(viewCell);
+
+        tbody.appendChild(tr);
       });
     }
 
-    // 4) Render reports into #reportsTable
-    function renderReports() {
-      const tbody = document.querySelector("#reportsTable tbody");
-      tbody.innerHTML = ""; // Clear existing
-
-      reports.forEach(rep => {
-        const row = document.createElement("tr");
-
-        const reportIdCell = document.createElement("td");
-        reportIdCell.textContent = rep.reportId;
-        row.appendChild(reportIdCell);
-
-        const listingIdCell = document.createElement("td");
-        listingIdCell.textContent = rep.listingId;
-        row.appendChild(listingIdCell);
-
-        const reasonCell = document.createElement("td");
-        reasonCell.textContent = rep.reason;
-        row.appendChild(reasonCell);
-
-        const dateCell = document.createElement("td");
-        dateCell.textContent = rep.date;
-        row.appendChild(dateCell);
-
-        tbody.appendChild(row);
-      });
-    }
-
-    // 5) Initialize on page load
-    document.addEventListener("DOMContentLoaded", () => {
-      renderUsers();
-      renderReports();
-    });
+    document.addEventListener('DOMContentLoaded', loadReports);
   </script>
 </body>
 </html>

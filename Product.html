@@ -185,6 +185,8 @@
     const description = params.get("description");
     const price = params.get("price");
     const image = params.get("image");
+    const listingId = params.get("id");
+
 
     // Fill the content
     document.getElementById("product-title").textContent = title;
@@ -294,28 +296,45 @@
     });
 
     // Handle the report submission
-    function submitReport() {
-      const reason = document.getElementById('reportReason').value;
-      const otherReason = document.getElementById('otherReason').value;
+    async function submitReport() {
+    const reason  = document.getElementById('reportReason').value;
+    const details = document.getElementById('otherReason').value.trim();
+    const reporterId = localStorage.getItem('userId');
 
-      if (!reason) {
-        alert('Please select a reason for reporting.');
-        return;
-      }
-
-      let reportMessage = `You have reported the listing: ${title}\nReason: ${reason}`;
-      if (reason === 'Other' && otherReason.trim()) {
-        reportMessage += `\nDetails: ${otherReason.trim()}`;
-      }
-
-      alert(reportMessage);
-
-      // Add logic to send the report to the server here
-
-      // Close the modal
-      const reportModal = bootstrap.Modal.getInstance(document.getElementById('reportModal'));
-      reportModal.hide();
+    if (!reporterId) {
+      return alert('You must be signed in to report.');
     }
+    if (!reason) {
+      return alert('Please select a reason.');
+    }
+
+    try {
+      const res = await fetch('http://localhost:3000/api/reports', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          listingId,
+          reporterId,
+          reason,
+          details
+        })
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || 'Server error');
+      }
+
+      alert('Thank you — your report has been submitted.');
+    } catch (err) {
+      console.error('Report submission failed:', err);
+      alert(err.message);
+    } finally {
+      // close the modal
+      const modalEl = document.getElementById('reportModal');
+      bootstrap.Modal.getInstance(modalEl).hide();
+    }
+  }
   </script>
 
   <!-- GAPI Script -->
