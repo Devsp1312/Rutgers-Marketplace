@@ -114,7 +114,8 @@
       try {
         const res = await fetch('http://localhost:3000/api/listings');
         if (!res.ok) throw new Error(`Server error: ${res.status}`);
-        const products = await res.json();
+        let products = await res.json();
+        products = products.reverse();
         renderProducts(products);
       } catch (err) {
         console.error(err);
