@@ -222,8 +222,8 @@ export async function getAllListings() {
     }
   }
 
-import User from './models/User.js';
-import Listing from './models/Listing.js';
+//import User from './models/User.js';
+//import Listing from './models/Listing.js';
 
 export async function getUserWishlist(userId) {
   try {

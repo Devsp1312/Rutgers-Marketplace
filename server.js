@@ -15,7 +15,7 @@ import {
   getListingsByUser,
   addReport, 
   getAllReports,
-  getListing,
+  //getListing,
   getUserWishlist
   //addToWishlist
 } from './Database/db_funcs.js';
