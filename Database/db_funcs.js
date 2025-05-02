@@ -65,7 +65,12 @@ const UserSchema = new Schema({
     Listings: {
         type: [String], // Array of Listing IDs
         required: false
-    }
+    },
+    
+    Wishlist: { 
+        type: [String], 
+        required: false, default: [] 
+      }
 }, {timestamps: true});
 
 
@@ -140,7 +145,7 @@ export async function addListing(title, description, price, seller_id, images) {
   }
 
 function getListing(id) {
-    return Listing.findById(id);
+    return Listing.findById(id).lean();
 }
 
 async function addReview(user_id, review) {
@@ -216,4 +221,42 @@ export async function getAllListings() {
       throw err;
     }
   }
-  
+
+import User from './models/User.js';
+import Listing from './models/Listing.js';
+
+export async function getUserWishlist(userId) {
+  try {
+    const user = await User.findById(userId).lean();
+    
+    // Debug to see what's in the user document
+    console.log('User document:', user);
+    console.log('User wishlist data:', user?.Wishlist);
+    
+    const wishlistIds = user?.Wishlist || [];
+    
+    if (!Array.isArray(wishlistIds) || wishlistIds.length === 0) {
+      console.log('No wishlist items found for user');
+      return [];
+    }
+    
+    // Convert string IDs to MongoDB ObjectId if needed
+    // Use Mongoose's Types.ObjectId if the IDs are stored as strings
+    // import mongoose from 'mongoose';
+    // const objectIds = wishlistIds.map(id => mongoose.Types.ObjectId(id));
+    
+    // Find all listings in the wishlist
+    console.log('Looking for listing IDs:', wishlistIds);
+    const items = await Listing.find({ _id: { $in: wishlistIds } }).lean();
+    
+    // Debug the retrieved items
+    console.log(`Found ${items.length} items in wishlist`);
+    console.log('First item sample:', items[0]);
+    
+    return items;
+  } catch (error) {
+    console.error('Error in getUserWishlist:', error);
+    throw error;
+  }
+}
+

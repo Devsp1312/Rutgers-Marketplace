@@ -14,7 +14,10 @@ import {
   getAllListings,
   getListingsByUser,
   addReport, 
-  getAllReports
+  getAllReports,
+  getListing,
+  getUserWishlist
+  //addToWishlist
 } from './Database/db_funcs.js';
 
 dotenv.config();
@@ -197,6 +200,37 @@ app.get('/api/reports', async (req, res) => {
   } catch (err) {
     console.error('GET /api/reports failed', err);
     res.status(500).json({ message: 'Could not fetch reports' });
+  }
+});
+
+app.get('/api/users/:userId/wishlist', async (req, res) => {
+  try {
+    const items = await getUserWishlist(req.params.userId);
+    res.json(items);
+  } catch (err) {
+    console.error('GET /api/users/:userId/wishlist failed:', err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+app.get('/api/debug/listing-model', async (req, res) => {
+  try {
+    // Get a sample listing
+    const sampleListing = await Listing.findOne().lean();
+    
+    // Check the schema fields
+    console.log('Listing schema paths:', Object.keys(Listing.schema.paths));
+    
+    // Check actual document fields
+    console.log('Sample listing document:', sampleListing);
+    
+    res.json({
+      schema: Object.keys(Listing.schema.paths),
+      sample: sampleListing
+    });
+  } catch (err) {
+    console.error('Debug failed:', err);
+    res.status(500).json({ message: err.message });
   }
 });
 

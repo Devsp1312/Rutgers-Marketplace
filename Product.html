@@ -295,6 +295,57 @@
       }
     });
 
+  async function addToWishlist() {
+  const userId    = localStorage.getItem('userId');
+  const listingId = listingIdFromQuery; // same one you pulled for report
+
+  if (!userId) return alert('Please sign in first.');
+
+  const res = await fetch(`http://localhost:3000/api/users/${userId}/wishlist`, {
+    method: 'POST',
+    headers: { 'Content-Type':'application/json' },
+    body: JSON.stringify({ listingId })
+  });
+
+  if (res.ok) alert('Added to your wishlist!');
+  else {
+    const err = await res.json();
+    alert(err.message || 'Couldn’t add');
+  }
+}
+
+window.addToWishlist = async function() {
+    try {
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        return alert('Please sign in first.');
+      }
+      if (!listingId) {
+        return alert('😕 Couldn’t figure out which listing you wanted.');
+      }
+
+      const res = await fetch(
+        `http://localhost:3000/api/users/${userId}/wishlist`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ listingId })
+        }
+      );
+
+      if (res.ok) {
+        alert('✅ Added to your wishlist!');
+      } else {
+        // grab server error message if any
+        const err = await res.json().catch(() => ({}));
+        alert(err.message || '❌ Could not add to wishlist.');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('❌ Network or unexpected error.');
+    }
+  }
+
     // Handle the report submission
     async function submitReport() {
     const reason  = document.getElementById('reportReason').value;
