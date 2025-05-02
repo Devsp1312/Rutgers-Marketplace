@@ -11,7 +11,13 @@ import {
   checkUser,
   getUser,
   addListing,
-  getAllListings
+  getAllListings,
+  getListingsByUser,
+  addReport, 
+  getAllReports,
+  getListing,
+  getUserWishlist
+  //addToWishlist
 } from './Database/db_funcs.js';
 
 dotenv.config();
@@ -145,6 +151,86 @@ app.get('/api/listings', async (req, res) => {
   } catch (err) {
     console.error(' GET /api/listings failed:', err);
     res.status(500).json({ message: 'Could not fetch listings' });
+  }
+});
+
+//import { getListingsByUser } from './Database/db_funcs.js';
+
+// GET all listings for one user
+app.get('/api/users/:userId/listings', async (req, res) => {
+  try {
+    const listings = await getListingsByUser(req.params.userId);
+    return res.json(listings);
+  } catch(err) {
+    console.error('GET /api/users/:userId/listings failed', err);
+    return res.status(500).json({ message: 'Could not fetch user listings' });
+  }
+});
+
+app.get('/api/listings/:id', async (req, res) => {
+  try {
+    const listing = await getListing(req.params.id);
+    if (!listing) return res.status(404).json({ message: "Not found" });
+    res.json(listing);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+app.post('/api/reports', async (req, res) => {
+  const { listingId, reporterId, reason, details } = req.body;
+  if (!listingId || !reporterId || !reason) {
+    return res.status(400).json({ message: 'Missing report fields' });
+  }
+  try {
+    const id = await addReport(listingId, reporterId, reason, details);
+    res.json({ id });
+  } catch (err) {
+    console.error('/api/reports error', err);
+    res.status(500).json({ message: 'Could not save report' });
+  }
+});
+
+// (Optional) Fetch all reports for admin dashboard
+app.get('/api/reports', async (req, res) => {
+  try {
+    const reports = await getAllReports();
+    res.json(reports);
+  } catch (err) {
+    console.error('GET /api/reports failed', err);
+    res.status(500).json({ message: 'Could not fetch reports' });
+  }
+});
+
+app.get('/api/users/:userId/wishlist', async (req, res) => {
+  try {
+    const items = await getUserWishlist(req.params.userId);
+    res.json(items);
+  } catch (err) {
+    console.error('GET /api/users/:userId/wishlist failed:', err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+app.get('/api/debug/listing-model', async (req, res) => {
+  try {
+    // Get a sample listing
+    const sampleListing = await Listing.findOne().lean();
+    
+    // Check the schema fields
+    console.log('Listing schema paths:', Object.keys(Listing.schema.paths));
+    
+    // Check actual document fields
+    console.log('Sample listing document:', sampleListing);
+    
+    res.json({
+      schema: Object.keys(Listing.schema.paths),
+      sample: sampleListing
+    });
+  } catch (err) {
+    console.error('Debug failed:', err);
+    res.status(500).json({ message: err.message });
   }
 });
 

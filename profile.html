@@ -135,22 +135,17 @@
         <div class="tab-pane fade show active" id="active-listings" role="tabpanel" aria-labelledby="active-listings-tab">
           <h5>Active Listings</h5>
           <p>Your current items for sale are displayed here.</p>
-          <div class="row">
-            <div class="col-md-4 mb-2">Item 1</div>
-            <div class="col-md-4 mb-2">Item 2</div>
-            <div class="col-md-4 mb-2">Item 3</div>
+          <div class="row" id="activeListingsContainer">
           </div>
         </div>
         <!-- Wishlist Tab -->
-        <div class="tab-pane fade" id="wishlist" role="tabpanel" aria-labelledby="wishlist-tab">
-          <h5>Wishlist</h5>
-          <p>Items you have bookmarked appear here.</p>
-          <div class="row">
-            <div class="col-md-4 mb-2">Item 1</div>
-            <div class="col-md-4 mb-2">Item 2</div>
-            <div class="col-md-4 mb-2">Item 3</div>
-          </div>
+          <div class="tab-pane fade" id="wishlist" role="tabpanel" aria-labelledby="wishlist-tab">
+            <h5>Wishlist</h5>
+              <p>Items you have bookmarked appear here.</p>
+          <div class="row" id="wishlistContainer">
+    <!-- JS will populate this -->
         </div>
+      </div>    
         <!-- Create Listing Tab -->
         <div class="tab-pane fade" id="create-listing" role="tabpanel" aria-labelledby="create-listing-tab">
           <h5>Create a New Listing</h5>
@@ -214,6 +209,8 @@
     document.addEventListener("DOMContentLoaded", () => {
       setupNavbar();
       setupProfilePage();
+      loadActiveListings();
+      loadWishlist();
       setupCreateListingForm();
       setupEditProfileForm();
     });
@@ -276,7 +273,7 @@
       }
     }
     
-    function setupCreateListingForm() {
+  function setupCreateListingForm() {
   const form = document.getElementById('createListingForm');
   if (!form) return;
 
@@ -286,7 +283,6 @@
     const title       = document.getElementById('listingTitle').value;
     const description = document.getElementById('listingDesc').value;
     const price       = document.getElementById('listingPrice').value;
-    // TODO: after you implement image uploads, replace this:
     const images      = document.getElementById('listingImage').files;  
 
     const seller_id   = localStorage.getItem('userId');
@@ -295,25 +291,20 @@
     }
 
     try {
-      // Create FormData object to handle file uploads
+      // Build the multipart form payload
       const formData = new FormData();
       formData.append('title', title);
       formData.append('description', description);
       formData.append('price', price);
       formData.append('seller_id', seller_id);
-      
-      // Add all selected images to the form data
       for (let i = 0; i < images.length; i++) {
         formData.append('images', images[i]);
       }
 
       const res = await fetch('http://localhost:3000/api/listings', {
         method: 'POST',
-        // Don't set Content-Type header - the browser will set it automatically
-        // with the correct boundary for multipart/form-data
         body: formData
       });
-
       const data = await res.json();
 
       if (!res.ok) {
@@ -322,7 +313,11 @@
 
       alert('Listing created! ID=' + data.id);
       form.reset();
-      // Optionally reload active listings tab…
+
+      // Refresh the Active Listings tab
+      if (typeof loadActiveListings === 'function') {
+        loadActiveListings();
+      }
     } catch (err) {
       console.error(err);
       alert('Network error—please try again.');
@@ -330,6 +325,132 @@
   });
 }
 
+async function loadActiveListings() {
+    const userId = localStorage.getItem('userId');
+    const container = document.getElementById('activeListingsContainer');
+    container.innerHTML = ''; // clear placeholders
+
+    if (!userId) {
+      container.innerHTML = `<p class="text-muted">Log in to see your listings.</p>`;
+      return;
+    }
+
+    try {
+      const res = await fetch(`http://localhost:3000/api/users/${userId}/listings`);
+      if (!res.ok) throw new Error(`Status ${res.status}`);
+      const listings = await res.json();
+
+      if (listings.length === 0) {
+        container.innerHTML = `<p class="text-muted">You have no active listings.</p>`;
+        return;
+      }
+
+      listings.forEach(item => {
+        const col = document.createElement('div');
+        col.className = 'col-md-4 mb-3';
+        col.innerHTML = `
+          <div class="card h-100">
+            <img 
+              src="${item.Images?.[0] || '/path/to/placeholder.png'}" 
+              class="card-img-top" 
+              alt="${item.Title}" 
+              style="object-fit:cover; height:150px;"
+            />
+            <div class="card-body p-2">
+              <h6 class="card-title mb-1">${item.Title}</h6>
+              <p class="mb-1 text-success">$${item.Price}</p>
+              <a href="product.html?id=${item._id}" class="btn btn-sm btn-outline-primary w-100">
+                View
+              </a>
+            </div>
+          </div>
+        `;
+        container.appendChild(col);
+      });
+    } catch (err) {
+      console.error('Couldn’t load active listings', err);
+      container.innerHTML = `<p class="text-danger">Failed to load your listings.</p>`;
+    }
+  }
+
+  async function loadWishlist() {
+  const userId = localStorage.getItem('userId');
+  const container = document.getElementById('wishlistContainer');
+  container.innerHTML = ''; 
+
+  if (!userId) {
+    container.innerHTML = '<p class="text-muted">Log in to see your wishlist.</p>';
+    return;
+  }
+
+  try {
+    // Add a timestamp to prevent caching
+    const res = await fetch(`http://localhost:3000/api/users/${userId}/wishlist?t=${Date.now()}`);
+    
+    if (!res.ok) {
+      console.error(`API error: ${res.status}`);
+      throw new Error(`Status ${res.status}`);
+    }
+    
+    const items = await res.json();
+    console.log('Wishlist API response:', items); // Debug the actual data structure
+
+    if (!items || items.length === 0) {
+      container.innerHTML = '<p class="text-muted">Your wishlist is empty.</p>';
+      return;
+    }
+
+    // Create a div for the row if it doesn't exist
+    const rowDiv = document.createElement('div');
+    rowDiv.className = 'row';
+    container.appendChild(rowDiv);
+
+    items.forEach(item => {
+      console.log('Processing item:', item); // Debug each item
+      
+      // Deeply check for field names with fallbacks
+      const title = item.Title || item.title || 'Untitled';
+      const price = item.Price || item.price || 0;
+      
+      // Check for images in different possible formats
+      let image = 'https://via.placeholder.com/150';
+      if (item.Images && item.Images.length > 0) {
+        image = item.Images[0];
+      } else if (item.images && item.images.length > 0) {
+        image = item.images[0];
+      } else if (item.image) {
+        image = item.image;
+      }
+      
+      const itemId = item._id || item.id;
+      
+      const col = document.createElement('div');
+      col.className = 'col-md-4 mb-3';
+      col.innerHTML = `
+        <div class="card h-100">
+          <img 
+            src="${image}" 
+            class="card-img-top" 
+            style="object-fit:cover; height:150px;" 
+            alt="${title}" 
+            onerror="this.src='https://via.placeholder.com/150'; this.onerror=null;" 
+          />
+          <div class="card-body p-2">
+            <h6 class="card-title mb-1">${title}</h6>
+            <p class="mb-1 text-success">${price}</p>
+            <a href="Product.html?id=${itemId}" 
+               class="btn btn-sm btn-outline-primary w-100">
+              View
+            </a>
+          </div>
+        </div>`;
+      rowDiv.appendChild(col);
+    });
+  } catch (err) {
+    console.error('Couldn\'t load wishlist', err);
+    container.innerHTML = '<p class="text-danger">Failed to load wishlist: ' + err.message + '</p>';
+  }
+}
     
     function setupEditProfileForm() {
       const editForm = document.getElementById("editProfileForm");
