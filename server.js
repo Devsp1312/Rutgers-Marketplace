@@ -15,7 +15,7 @@ import {
   getListingsByUser,
   addReport, 
   getAllReports,
-  //getListing,
+  getListing,
   getUserWishlist
   //addToWishlist
 } from './Database/db_funcs.js';
@@ -167,16 +167,16 @@ app.get('/api/users/:userId/listings', async (req, res) => {
   }
 });
 
-app.get('/api/listings/:id', async (req, res) => {
-  try {
-    const listing = await getListing(req.params.id);
-    if (!listing) return res.status(404).json({ message: "Not found" });
-    res.json(listing);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
+// app.get('/api/listings/:id', async (req, res) => {
+//   try {
+//     const listing = await getListing(req.params.id);
+//     if (!listing) return res.status(404).json({ message: "Not found" });
+//     res.json(listing);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// });
 
 app.post('/api/reports', async (req, res) => {
   const { listingId, reporterId, reason, details } = req.body;
@@ -231,6 +231,19 @@ app.get('/api/debug/listing-model', async (req, res) => {
   } catch (err) {
     console.error('Debug failed:', err);
     res.status(500).json({ message: err.message });
+  }
+});
+
+app.get('/api/listings/:id', async (req, res) => {
+  try {
+    const listing = await getListing(req.params.id);
+    if (!listing) {
+      return res.status(404).json({ message: 'Listing not found' });
+    }
+    res.json(listing);
+  } catch (err) {
+    console.error('GET /api/listings/:id error:', err);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 

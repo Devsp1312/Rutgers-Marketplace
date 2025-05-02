@@ -144,7 +144,7 @@ export async function addListing(title, description, price, seller_id, images) {
     }
   }
 
-function getListing(id) {
+export async function getListing(id) {
     return Listing.findById(id).lean();
 }
 
@@ -155,7 +155,7 @@ async function addReview(user_id, review) {
     console.log(`Review added to user: ${user_id}`);
     }
 
-async function addListingToUser(user_id, listing_id) {
+export async function addListingToUser(user_id, listing_id) {
     const user = await User.findById(user_id);
     user.Listings.push(listing_id);
     await user.save();
