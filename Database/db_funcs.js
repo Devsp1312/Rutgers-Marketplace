@@ -58,6 +58,11 @@ const UserSchema = new Schema({
         type: String,
         required: true
     },
+    IsAdmin: {
+        type: Boolean,
+        required: false,
+        default: false
+    },
     Reviews: {
         type: [String],
         required: false
@@ -190,6 +195,8 @@ async function changeListingImages(listing_id, newImages) {
     console.log(`Images changed for listing: ${listing_id}`);
 }
 
+
+
 // module.exports = {
 //     connectToDB,
 //     addUser,
@@ -259,4 +266,58 @@ export async function getUserWishlist(userId) {
     throw error;
   }
 }
+
+export async function deleteListing(listingId) {
+  try {
+    const listing = await Listing.findById(listingId);
+    if (!listing) {
+      console.log(`Listing with ID ${listingId} not found`);
+      return false;
+    }
+
+    const userId = listing.Seller_id;
+
+    const deleteResult = await Listing.deleteOne({ _id: listingId });
+
+    if (deleteResult.deletedCount !== 1) {
+      console.error('Failed to delete listing:', listingId);
+      return { success: false, message: 'Failed to delete listing' };
+    }
+
+    console.log(`Listing with ID ${listingId} deleted successfully.`);
+
+    const userUpdateResult = await User.updateOne(
+      { _id: sellerId },
+      { $pull: { Listings: listingId } }
+    );
+
+    if (userUpdateResult.modifiedCount !== 1) {
+      console.warn(`Warning: Could not update user ${sellerId}'s Listings array or no update was needed.`);
+      return { 
+        success: true, 
+        message: 'Listing deleted, but could not update user\'s listings array', 
+        listingDeleted: true,
+        userUpdated: false
+      };
+    } 
+
+    console.log(`Listing ID ${listingId} removed from user ${sellerId}'s Listings array.`);
+
+    return { 
+      success: true, 
+      message: 'Listing deleted and user updated successfully',
+      listingDeleted: true,
+      userUpdated: true
+    };
+  } 
+  catch (error) {
+    console.error('Error in deleteListing function:', error);
+    return { 
+      success: false, 
+      message: `An error occurred: ${error.message}`,
+      error: error
+    };
+  }
+}
+
 
