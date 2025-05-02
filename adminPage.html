@@ -76,45 +76,44 @@
     }
 
     function renderReports(reports) {
-      const tbody = document.querySelector('#reportsTable tbody');
-      tbody.innerHTML = '';
+  const tbody = document.querySelector('#reportsTable tbody');
+  tbody.innerHTML = '';
 
-      if (!reports.length) {
-        tbody.innerHTML = `<tr><td colspan="4">No reports found.</td></tr>`;
-        return;
-      }
+  if (!reports.length) {
+    tbody.innerHTML = `<tr><td colspan="4">No reports found.</td></tr>`;
+    return;
+  }
 
-      reports.forEach(r => {
-        const tr = document.createElement('tr');
+  reports.forEach(r => {
+    const tr = document.createElement('tr');
 
-        // Report ID
-        const idCell = document.createElement('td');
-        idCell.textContent = r._id;
-        tr.appendChild(idCell);
+    const idCell = document.createElement('td');
+    idCell.textContent = r._id;
+    tr.appendChild(idCell);
 
-        // Reason
-        const reasonCell = document.createElement('td');
-        reasonCell.textContent = r.reason;
-        tr.appendChild(reasonCell);
+    const reasonCell = document.createElement('td');
+    reasonCell.textContent = r.reason;
+    tr.appendChild(reasonCell);
 
-        // Created At
-        const dateCell = document.createElement('td');
-        dateCell.textContent = new Date(r.createdAt).toLocaleString();
-        tr.appendChild(dateCell);
+    const dateCell = document.createElement('td');
+    dateCell.textContent = new Date(r.createdAt).toLocaleString();
+    tr.appendChild(dateCell);
+    const viewCell = document.createElement('td');
+    const link = document.createElement('a');
 
-        // View Listing link
-        const viewCell = document.createElement('td');
-        const link = document.createElement('a');
-        link.href = `Product.html?id=${r.listingId}`;
-        link.textContent = 'View';
-        link.className = 'btn btn-sm btn-outline-primary';
-        viewCell.appendChild(link);
-        tr.appendChild(viewCell);
+    const listingId = typeof r.listingId === 'object'
+      ? r.listingId._id
+      : r.listingId;
 
-        tbody.appendChild(tr);
-      });
-    }
+    link.href = `Product.html?id=${listingId}`;
+    link.textContent = 'View';
+    link.className = 'btn btn-sm btn-outline-primary';
+    viewCell.appendChild(link);
+    tr.appendChild(viewCell);
 
+    tbody.appendChild(tr);
+  });
+}
     document.addEventListener('DOMContentLoaded', loadReports);
   </script>
 </body>
