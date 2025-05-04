@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google Client and API -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="https://apis.google.com/js/api.js" async defer></script>
-
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Product Details</title>
@@ -81,7 +77,9 @@
   </style>
   <script type="module">
     import { messageSeller } from './messageSeller.js';
+    import { scheduleMeeting } from './scheduleMeeting.js';
     window.messageSeller = messageSeller;
+    window.scheduleMeeting = scheduleMeeting;
   </script>
 </head>
 <body>
@@ -214,86 +212,6 @@
   })();
   </script>
 
-  <!-- Google Calendar Integration -->
-  <script>
-    let tokenClient;
-    let gapiInited = false;
-    let gisInited = false;
-    const CLIENT_ID = "YOUR_CLIENT_ID.apps.googleusercontent.com";
-    const SCOPES = "https://www.googleapis.com/auth/calendar.events";
-
-    // Called when gapi loads
-    function gapiLoaded() {
-      gapi.load("client", initializeGapiClient);
-    }
-
-    async function initializeGapiClient() {
-      await gapi.client.init({
-        discoveryDocs: [
-          "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
-        ],
-      });
-      gapiInited = true;
-    }
-
-    // Called when google.accounts.gsi loads
-    function gisLoaded() {
-      tokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: CLIENT_ID,
-        scope: SCOPES,
-        callback: "", // set just before requesting the token
-      });
-      gisInited = true;
-    }
-
-    async function scheduleMeeting() {
-      // Check if GAPI is initialized
-      if (!gapiInited || !gisInited) {
-        alert("Google Calendar not ready yet!");
-        return;
-      }
-      // Request user consent
-      tokenClient.callback = async (resp) => {
-        if (resp.error !== undefined) {
-          alert("Error in authentication");
-          return;
-        }
-        // Create the calendar event
-        await createCalendarEvent();
-      };
-      tokenClient.requestAccessToken({ prompt: "consent" });
-    }
-
-    async function createCalendarEvent() {
-      const event = {
-        summary: `Meeting about ${title}`,
-        description: `Interested in buying: ${description}`,
-        start: {
-          dateTime: new Date().toISOString(),
-        },
-        end: {
-          dateTime: new Date(Date.now() + 3600000).toISOString(),
-        },
-      };
-
-      try {
-        const request = {
-          calendarId: "primary",
-          resource: event,
-        };
-        const response = await gapi.client.calendar.events.insert(request);
-        alert(`Event created: ${response.result.htmlLink}`);
-      } catch (error) {
-        console.error("Error creating event", error);
-        alert("Could not create event");
-      }
-    }
-
-    window.onload = function() {
-      gisLoaded(); // loads OAuth client
-    }
-  </script>
-
   <script>
     document.getElementById('reportReason').addEventListener('change', function () {
       const otherReasonContainer = document.getElementById('otherReasonContainer');
@@ -305,57 +223,26 @@
     });
 
   async function addToWishlist() {
-  const userId    = localStorage.getItem('userId');
-  const listingId = listingIdFromQuery; // same one you pulled for report
+    const userId    = localStorage.getItem('userId');
+    const listingId = listingIdFromQuery; // same one you pulled for report
 
-  if (!userId) return alert('Please sign in first.');
+    if (!userId) return alert('Please sign in first.');
 
-  const res = await fetch(`http://localhost:3000/api/users/${userId}/wishlist`, {
-    method: 'POST',
-    headers: { 'Content-Type':'application/json' },
-    body: JSON.stringify({ listingId })
-  });
+    const res = await fetch(`http://localhost:3000/api/users/${userId}/wishlist`, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify({ listingId })
+    });
 
-  if (res.ok) alert('Added to your wishlist!');
-  else {
-    const err = await res.json();
-    alert(err.message || 'Couldn’t add');
-  }
-}
-
-window.addToWishlist = async function() {
-    try {
-      const userId = localStorage.getItem('userId');
-      if (!userId) {
-        return alert('Please sign in first.');
-      }
-      if (!listingId) {
-        return alert('Couldn’t figure out which listing you wanted.');
-      }
-
-      const res = await fetch(
-        `http://localhost:3000/api/users/${userId}/wishlist`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ listingId })
-        }
-      );
-
-      if (res.ok) {
-        alert('Added to your wishlist!');
-      } else {
-        // grab server error message if any
-        const err = await res.json().catch(() => ({}));
-        alert(err.message || 'Could not add to wishlist.');
-      }
-    } catch (e) {
-      console.error(e);
-      alert('Network or unexpected error.');
+    if (res.ok) alert('Added to your wishlist!');
+    else {
+      const err = await res.json();
+      alert(err.message || "Could not add");
     }
   }
+  window.addToWishlist = addToWishlist;
 
-    async function submitReport() {
+  async function submitReport() {
     const reason  = document.getElementById('reportReason').value;
     const details = document.getElementById('otherReason').value.trim();
     const reporterId = localStorage.getItem('userId');
@@ -393,12 +280,7 @@ window.addToWishlist = async function() {
       bootstrap.Modal.getInstance(modalEl).hide();
     }
   }
+  window.submitReport = submitReport;
   </script>
-
-  <!-- GAPI Script -->
-  <script 
-    src="https://apis.google.com/js/api.js" 
-    onload="gapiLoaded()"
-  ></script>
 </body>
 </html>
