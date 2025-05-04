@@ -1,0 +1,61 @@
+/* Page Background */
+body {
+  background-color: #f5f5f5;
+  margin: 0;
+  padding: 0;
+}
+
+/* Back to Marketplace Button */
+.back-button {
+  margin-top: 2rem;
+}
+
+/* Product Container */
+.product-card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-top: 3rem;
+  padding: 2rem;
+}
+
+.product-img {
+  width: 100%;
+  max-width: 450px;
+  border-radius: 6px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+  margin-bottom: 1rem;
+}
+
+.product-title {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.price {
+  font-size: 1.4rem;
+  color: #28a745;
+  font-weight: bold;
+  margin: 0.3rem 0 1rem 0;
+}
+
+.condition {
+  font-style: italic;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+/* Additional spacing for buttons */
+.message-btn, 
+.schedule-btn {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+/* Media query for smaller devices */
+@media (max-width: 576px) {
+  .product-card {
+    padding: 1rem;
+  }
+}
