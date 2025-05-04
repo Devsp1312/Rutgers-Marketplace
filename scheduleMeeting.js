@@ -15,7 +15,7 @@ export function scheduleMeeting() {
     return d.toISOString().replace(/[-:.]/g, "").slice(0, 15) + "Z";
   }
 
-  const eventDetails = `Interested in buying: ${description}`;
+  const eventDetails = `Interested in buying: ${title}${description}`;
 
   const dates = `${formatDate(start)}/${formatDate(end)}`;
   const url =
