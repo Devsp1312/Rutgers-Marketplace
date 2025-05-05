@@ -150,7 +150,17 @@ export async function addListing(title, description, price, seller_id, images) {
   }
 
 export async function getListing(id) {
-    return Listing.findById(id).lean();
+    // Find listing by ID and populate seller info from User collection
+    const listing = await Listing.findById(id).lean();
+    if (!listing) return null;
+    
+    // Get seller info
+    const seller = await User.findById(listing.Seller_id).lean();
+    if (seller) {
+        listing.sellerEmail = seller.Email;
+    }
+    
+    return listing;
 }
 
 async function addReview(user_id, review) {
