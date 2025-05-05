@@ -1,218 +1,299 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Marketplace</title>
+ <meta charset="UTF-8" />
+ <title>Marketplace</title>
 
-  <!-- Bootstrap CSS -->
-  <link 
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" 
-    rel="stylesheet"
-  />
-  <link rel="stylesheet" href="styles.css" />
 
-  <!-- Google Identity Services + JWT decode -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="https://apis.google.com/js/api.js" async defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
-  <script type="module">
-    import Autocomplete from './Autocomplete.js';
-    window.Autocomplete = Autocomplete;
-  </script>
+ <!-- Bootstrap CSS -->
+ <link
+   href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+   rel="stylesheet"
+ />
+ <link rel="stylesheet" href="styles.css" />
+
+
+ <!-- Google Identity Services + JWT decode -->
+ <script src="https://accounts.google.com/gsi/client" async defer></script>
+ <script src="https://apis.google.com/js/api.js" async defer></script>
+ <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+ <script type="module">
+   import Autocomplete from './Autocomplete.js';
+   window.Autocomplete = Autocomplete;
+ </script>
 </head>
 <body>
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-custom sticky-top mb-3">
-    <div class="container-fluid">
-      <a class="navbar-brand d-flex align-items-center" href="index.html">
-        <img src="FrontEnd/Images/RuMarketplaceLogo.png" alt="RU Marketplace" class="logo-img" />
-        <span class="ms-2 fw-bold">RU-Marketplace</span>
-      </a>
+ <!-- Navbar -->
+ <nav class="navbar navbar-expand-lg navbar-custom sticky-top mb-3">
+   <div class="container-fluid">
+     <a class="navbar-brand d-flex align-items-center" href="index.html">
+       <img src="FrontEnd/Images/RuMarketplaceLogo.png" alt="RU Marketplace" class="logo-img" />
+       <span class="ms-2 fw-bold">RU-Marketplace</span>
+     </a>
 
-      <div class="d-flex align-items-center">
-        <div class="input-group me-3">
-          <input type="text" class="form-control search-input" placeholder="Search…">
-          <button class="btn btn-outline-light">Filter</button>
-        </div>
-      </div>
 
-      <div class="d-flex align-items-center ms-auto me-3">
-        <div class="dropdown me-3">
-          <button class="icon-btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
-            <img src="FrontEnd/Images/wishlisticon.png" alt="Wishlist Icon" />
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end" id="wishlistDropdownMenu">
-            <li><a class="dropdown-item" href="#">Your wishlist is empty</a></li>
-          </ul>
-        </div>
-
-        <div class="dropdown">
-          <button class="icon-btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
-            <img src="FrontEnd/Images/user.png" alt="User Icon" />
-            <span id="greeting" class="ms-1"></span>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end" id="userDropdownMenu">
-            <!-- populated by updateUserMenu() -->
-          </ul>
-        </div>
-      </div>
-    </div>
-  </nav>
-
-  <!-- Products -->
-  <div class="container">
-    <div class="row" id="product-grid"></div>
-  </div>
-
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-  <script>
-    // 1) Helper to render user menu on every load
-    function updateUserMenu() {
-      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-      const username = localStorage.getItem('username') || '';
-      const greetingEl = document.getElementById('greeting');
-      const menu = document.getElementById('userDropdownMenu');
-
-      if (isLoggedIn) {
-        greetingEl.textContent = `Hello, ${username}!`;
-        menu.innerHTML = `
-          <li><a class="dropdown-item" href="profile.html">Profile</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" href="#" id="logoutLink">Logout</a></li>
-        `;
-        document.getElementById('logoutLink')
-                .addEventListener('click', async () => {
-                  localStorage.clear();
-                  // Reinitialize autocomplete after logout
-                  const products = await (await fetch('http://localhost:3000/api/listings')).json();
-                  new Autocomplete('.search-input', products);
-                  location.reload();
-                });
-      } else {
-        greetingEl.textContent = '';
-        menu.innerHTML = `
-          <li class="px-3 py-2">
-            <div id="g_id_signin"></div>
-          </li>
-        `;
-        // render GSI button
-        google.accounts.id.renderButton(
-          document.getElementById('g_id_signin'),
-          { theme: 'outline', size: 'small' }
-        );
-      }
-    }
-
-    // 2) Initialize GSI and then render user menu
-    window.onload = () => {
-      google.accounts.id.initialize({
-        client_id: '922908217557-2osq9upebgcpke4jl560hqbl77eodu5i.apps.googleusercontent.com',
-        callback: HandleAuth,
-        ux_mode: 'popup',
-        cancel_on_tap_outside: false
-      });
-      updateUserMenu();
-    };
-
-    // 3) Fetch & render products
-    document.addEventListener('DOMContentLoaded', async () => {
-      try {
-        const res = await fetch('http://localhost:3000/api/listings');
-        if (!res.ok) throw new Error(`Server error: ${res.status}`);
-        let products = await res.json();
-        products = products.reverse();
-        renderProducts(products);
+     <div class="d-flex align-items-center">
+       <div class="input-group me-3">
+         <input type="text" class="form-control search-input" placeholder="Search…">
+         <select id="priceFilter" class="form-select form-select-sm w-auto ms-2" style="max-width: 180px;">
+           <option value="default" disabled selected>Filter</option>
+           <option value="lowToHigh">Price: Low to High</option>
+           <option value="highToLow">Price: High to Low</option>
+         </select>
         
-        // Initialize autocomplete with products
-        const autocomplete = new Autocomplete('.search-input', products);
-      } catch (err) {
-        console.error(err);
-        document.getElementById('product-grid').innerHTML =
-          `<p class="text-danger">Failed to load products.</p>`;
-      }
-    });
+       </div>
+      
+     </div>
+ 
 
-    function renderProducts(items) {
-      const grid = document.getElementById('product-grid');
-      grid.innerHTML = '';
-      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
 
-      items.forEach(prod => {
-        const col = document.createElement('div');
-        col.className = 'col-sm-6 col-md-4 col-lg-3 mb-4';
-        col.innerHTML = `
-          <div class="card h-100">
-            <img src="${prod.Images?.[0]||prod.image||''}"
-                 class="card-img-top"
-                 alt="${prod.Title||prod.title}" />
-            <div class="card-body">
-              <h5 class="card-title">${prod.Title||prod.title}</h5>
-              <p class="card-text">${prod.Description||prod.description}</p>
-              <p class="text-success">$${prod.Price||prod.price}</p>
-              ${isLoggedIn
-                ? `<button class="btn btn-success"
-                    onclick="buyNow(
-                      '${prod._id}',
-                      '${(prod.Title||prod.title)}',
-                      '${(prod.Description||prod.description)}',
-                      '${prod.Price||prod.price}',
-                      '${(prod.Images?.[0]||prod.image||'')}'
-                    )">
-                    Buy Now
-                  </button>`
-                : ``
-              }
-            </div>
-          </div>`;
-        grid.appendChild(col);
-      });
-    }
+     <div class="d-flex align-items-center ms-auto me-3">
+       <div class="dropdown me-3">
+         <button class="icon-btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
+           <img src="FrontEnd/Images/wishlisticon.png" alt="Wishlist Icon" />
+         </button>
+         <ul class="dropdown-menu dropdown-menu-end" id="wishlistDropdownMenu">
+           <li><a class="dropdown-item" href="#">Your wishlist is empty</a></li>
+         </ul>
+       </div>
 
-    // 4) Google callback
-    async function HandleAuth(response) {
-      if (!response.credential) return;
-      const { name, email: rawEmail } = jwt_decode(response.credential);
-      const email = rawEmail.trim().toLowerCase();
 
-      try {
-        const res = await fetch('http://localhost:3000/api/user', {
-          method: 'POST',
-          headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({ name, email })
-        });
-        if (res.status === 403) {
-          alert((await res.json()).message);
-          return;
-        }
-        if (!res.ok) throw await res.json();
+       <div class="dropdown">
+         <button class="icon-btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
+           <img src="FrontEnd/Images/user.png" alt="User Icon" />
+           <span id="greeting" class="ms-1"></span>
+         </button>
+         <ul class="dropdown-menu dropdown-menu-end" id="userDropdownMenu">
+           <!-- populated by updateUserMenu() -->
+         </ul>
+       </div>
+     </div>
+   </div>
+ </nav>
 
-        const { id } = await res.json();
-        localStorage.setItem('userId', id);
-        localStorage.setItem('username', name);
-        localStorage.setItem('userEmail', email);
-        localStorage.setItem('isLoggedIn', 'true');
-        
-        // now update the menu, products & reinitialize autocomplete
-        updateUserMenu();
-        const products = await (await fetch('http://localhost:3000/api/listings')).json();
-        renderProducts(products);
-        new Autocomplete('.search-input', products); // Reinitialize autocomplete
-      } catch (err) {
-        console.error(err);
-        alert(err.message||'Auth failed');
-      }
-    }
 
-    // 5) Buy-Now redirect
-    function buyNow(id, title, description, price, image) {
-  const q = new URLSearchParams({ 
-    id, title, description, price, image 
-  }).toString();
-  window.location.href = `Product.html?${q}`;
+ <!-- Products -->
+ <div class="container">
+   <div class="row" id="product-grid"></div>
+ </div>
+
+
+ <!-- Bootstrap JS -->
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+ <script>
+   // 1) Helper to render user menu on every load
+   function updateUserMenu() {
+     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+     const username = localStorage.getItem('username') || '';
+     const greetingEl = document.getElementById('greeting');
+     const menu = document.getElementById('userDropdownMenu');
+
+
+     if (isLoggedIn) {
+       greetingEl.textContent = `Hello, ${username}!`;
+       menu.innerHTML = `
+         <li><a class="dropdown-item" href="profile.html">Profile</a></li>
+         <li><hr class="dropdown-divider"></li>
+         <li><a class="dropdown-item" href="#" id="logoutLink">Logout</a></li>
+       `;
+       document.getElementById('logoutLink')
+               .addEventListener('click', async () => {
+                 localStorage.clear();
+                 // Reinitialize autocomplete after logout
+                 const products = await (await fetch('http://localhost:3000/api/listings')).json();
+                 new Autocomplete('.search-input', products);
+                 location.reload();
+               });
+     } else {
+       greetingEl.textContent = '';
+       menu.innerHTML = `
+         <li class="px-3 py-2">
+           <div id="g_id_signin"></div>
+         </li>
+       `;
+       // render GSI button
+       google.accounts.id.renderButton(
+         document.getElementById('g_id_signin'),
+         { theme: 'outline', size: 'small' }
+       );
+     }
+   }
+
+
+   // 2) Initialize GSI and then render user menu
+   window.onload = () => {
+     google.accounts.id.initialize({
+       client_id: '922908217557-2osq9upebgcpke4jl560hqbl77eodu5i.apps.googleusercontent.com',
+       callback: HandleAuth,
+       ux_mode: 'popup',
+       cancel_on_tap_outside: false
+     });
+     updateUserMenu();
+   };
+
+
+   // 3) Fetch & render products
+   document.addEventListener('DOMContentLoaded', async () => {
+     try {
+       const res = await fetch('http://localhost:3000/api/listings');
+       if (!res.ok) throw new Error(`Server error: ${res.status}`);
+       let products = await res.json();
+       products = products.reverse();
+       renderProducts(products);
+      
+       // Initialize autocomplete with products
+       const autocomplete = new Autocomplete('.search-input', products);
+     } catch (err) {
+       console.error(err);
+       document.getElementById('product-grid').innerHTML =
+         `<p class="text-danger">Failed to load products.</p>`;
+     }
+   });
+
+
+   function renderProducts(items) {
+     const grid = document.getElementById('product-grid');
+     grid.innerHTML = '';
+     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+
+
+     items.forEach(prod => {
+       const col = document.createElement('div');
+   col.className = 'col-sm-6 col-md-4 col-lg-3 mb-4';
+   col.innerHTML = `
+     <div class="card h-100 product-card" data-price="${prod.Price || prod.price}">
+       <img src="${prod.Images?.[0] || prod.image || ''}"
+            class="card-img-top"
+            alt="${prod.Title || prod.title}" />
+       <div class="card-body">
+         <h5 class="card-title">${prod.Title || prod.title}</h5>
+         <p class="card-text">${prod.Description || prod.description}</p>
+         <p class="text-success">$${prod.Price || prod.price}</p>
+             ${isLoggedIn
+               ? `<button class="btn btn-success"
+                   onclick="buyNow(
+                     '${prod._id}',
+                     '${(prod.Title||prod.title)}',
+                     '${(prod.Description||prod.description)}',
+                     '${prod.Price||prod.price}',
+                     '${(prod.Images?.[0]||prod.image||'')}'
+                   )">
+                   Buy Now
+                 </button>`
+               : ``
+             }
+           </div>
+         </div>`;
+       grid.appendChild(col);
+     });
+   }
+
+
+   // 4) Google callback
+   async function HandleAuth(response) {
+     if (!response.credential) return;
+     const { name, email: rawEmail } = jwt_decode(response.credential);
+     const email = rawEmail.trim().toLowerCase();
+
+
+     try {
+       const res = await fetch('http://localhost:3000/api/user', {
+         method: 'POST',
+         headers: {'Content-Type':'application/json'},
+         body: JSON.stringify({ name, email })
+       });
+       if (res.status === 403) {
+         alert((await res.json()).message);
+         return;
+       }
+       if (!res.ok) throw await res.json();
+
+
+       const { id } = await res.json();
+       localStorage.setItem('userId', id);
+       localStorage.setItem('username', name);
+       localStorage.setItem('userEmail', email);
+       localStorage.setItem('isLoggedIn', 'true');
+      
+       // now update the menu, products & reinitialize autocomplete
+       updateUserMenu();
+       const products = await (await fetch('http://localhost:3000/api/listings')).json();
+       renderProducts(products);
+       new Autocomplete('.search-input', products); // Reinitialize autocomplete
+     } catch (err) {
+       console.error(err);
+       alert(err.message||'Auth failed');
+     }
+   }
+
+
+   // 5) Buy-Now redirect
+   function buyNow(id, title, description, price, image) {
+ const q = new URLSearchParams({
+   id, title, description, price, image
+ }).toString();
+ window.location.href = `Product.html?${q}`;
 }
 
-  </script>
+
+ document.getElementById("priceFilter").addEventListener("change", function () {
+   const sortOrder = this.value;
+   const productCards = Array.from(document.querySelectorAll(".product-card"));
+  
+   productCards.sort((a, b) => {
+     const priceA = parseFloat(a.dataset.price);
+     const priceB = parseFloat(b.dataset.price);
+     return sortOrder === "lowToHigh" ? priceA - priceB : priceB - priceA;
+   });
+
+
+   const grid = document.getElementById("product-grid");
+   grid.innerHTML = "";
+   productCards.forEach(card => {
+     const wrapper = document.createElement("div");
+     wrapper.className = "col-sm-6 col-md-4 col-lg-3 mb-4";
+     wrapper.appendChild(card);
+     grid.appendChild(wrapper);
+   });
+ });
+ // Show welcome modal when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+ const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'), {
+   backdrop: 'static',
+   keyboard: true
+ });
+ welcomeModal.show();
+});
+
+
+
+
+
+
+
+
+ </script>
+<!-- Welcome Modal -->
+<div class="modal fade" id="welcomeModal" tabindex="-1" aria-labelledby="welcomeModalLabel" aria-hidden="true">
+ <div class="modal-dialog modal-dialog-centered">
+   <div class="modal-content text-center p-3">
+     <div class="modal-header border-0 flex-column">
+       <img src="FrontEnd/Images/RuMarketplaceLogo.png" alt="RU Marketplace Logo" style="height: 60px;" class="mb-2" />
+       <h5 class="modal-title w-100 fw-bold" id="welcomeModalLabel">🎓 Welcome Rutgers Students!</h5>
+     </div>
+     <div class="modal-body">
+       <p class="mb-2">Please log in using your <strong>Rutgers email</strong> to access all features of the RU-Marketplace.</p>
+     </div>
+     <div class="modal-footer justify-content-center border-0">
+       <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">Got it!</button>
+     </div>
+   </div>
+ </div>
+
+
+</div>
 </body>
 </html>
+
