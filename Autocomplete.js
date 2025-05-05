@@ -105,11 +105,9 @@ export default class Autocomplete {
   }
 
   openProductDetails(product) {
+    // We only need to pass the ID since Product.html fetches the full details
     const query = new URLSearchParams({
-      title: product.Title || product.title,
-      description: product.Description || product.description,
-      price: product.Price || product.price,
-      image: (product.Images?.[0] || product.image || '')
+      id: product._id || product.id  // Handle both _id and id properties
     }).toString();
     
     window.location.href = `Product.html?${query}`;
