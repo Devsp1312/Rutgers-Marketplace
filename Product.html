@@ -184,12 +184,19 @@
     const reason  = document.getElementById('reportReason').value;
     const details = document.getElementById('otherReason').value.trim();
     const reporterId = localStorage.getItem('userId');
+    
+    // Get listing ID from URL parameters
+    const params = new URLSearchParams(window.location.search);
+    const listingId = params.get('id');
 
     if (!reporterId) {
       return alert('You must be signed in to report.');
     }
     if (!reason) {
       return alert('Please select a reason.');
+    }
+    if (!listingId) {
+      return alert('Listing ID not found.');
     }
 
     try {
@@ -209,13 +216,16 @@
         throw new Error(err.message || 'Server error');
       }
 
-      alert('Thank you — your report has been submitted.');
+      const data = await res.json();
+      alert(`Thank you — your report has been submitted.\nReport ID: ${data.id}`);
+      
+      // Close modal after successful submission
+      const modalEl = document.getElementById('reportModal');
+      const modalInstance = bootstrap.Modal.getInstance(modalEl);
+      modalInstance.hide();
     } catch (err) {
       console.error('Report submission failed:', err);
       alert(err.message);
-    } finally {
-      const modalEl = document.getElementById('reportModal');
-      bootstrap.Modal.getInstance(modalEl).hide();
     }
   }
   window.submitReport = submitReport;
