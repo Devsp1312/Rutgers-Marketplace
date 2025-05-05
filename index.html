@@ -259,12 +259,32 @@
    });
  });
  // Show welcome modal when the page loads
-document.addEventListener('DOMContentLoaded', () => {
- const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'), {
-   backdrop: 'static',
-   keyboard: true
- });
- welcomeModal.show();
+ document.addEventListener('DOMContentLoaded', async () => {
+  // Show welcome modal only on first visit
+  if (!localStorage.getItem('hasVisited')) {
+    const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'), {
+      backdrop: 'static',
+      keyboard: true
+    });
+    welcomeModal.show();
+    localStorage.setItem('hasVisited', 'true');
+  }
+
+  // Fetch and render products
+  try {
+    const res = await fetch('http://localhost:3000/api/listings');
+    if (!res.ok) throw new Error(`Server error: ${res.status}`);
+    let products = await res.json();
+    products = products.reverse();
+    renderProducts(products);
+
+    // Initialize autocomplete
+    new Autocomplete('.search-input', products);
+  } catch (err) {
+    console.error(err);
+    document.getElementById('product-grid').innerHTML =
+      `<p class="text-danger">Failed to load products.</p>`;
+  }
 });
 
 
