@@ -143,3 +143,17 @@ button {
 .dropdown-menu {
   min-width: 240px;
 }
+
+/* Wishlist Dropdown Styling */
+#wishlistDropdownMenu .dropdown-item {
+  padding: 0.5rem 1rem;
+  white-space: normal;
+}
+
+#wishlistDropdownMenu .dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+#wishlistDropdownMenu img {
+  border-radius: 4px;
+}

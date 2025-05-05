@@ -52,8 +52,8 @@
          <button class="icon-btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
            <img src="FrontEnd/Images/wishlisticon.png" alt="Wishlist Icon" />
          </button>
-         <ul class="dropdown-menu dropdown-menu-end" id="wishlistDropdownMenu">
-           <li><a class="dropdown-item" href="#">Your wishlist is empty</a></li>
+         <ul class="dropdown-menu dropdown-menu-end" id="wishlistDropdownMenu" style="min-width: 300px;">
+           <!-- Will be populated by loadWishlistDropdown() -->
          </ul>
        </div>
 
@@ -119,6 +119,7 @@
          { theme: 'outline', size: 'small' }
        );
      }
+     loadWishlistDropdown();
    }
 
 
@@ -150,6 +151,7 @@
        document.getElementById('product-grid').innerHTML =
          `<p class="text-danger">Failed to load products.</p>`;
      }
+     loadWishlistDropdown();
    });
 
 
@@ -287,12 +289,47 @@
   }
 });
 
+async function loadWishlistDropdown() {
+  const wishlistMenu = document.getElementById('wishlistDropdownMenu');
+  const userId = localStorage.getItem('userId');
+  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
 
+  if (!isLoggedIn || !userId) {
+    wishlistMenu.innerHTML = '<li><a class="dropdown-item text-muted">Please login to see wishlist</a></li>';
+    return;
+  }
 
+  try {
+    const res = await fetch(`http://localhost:3000/api/users/${userId}/wishlist`);
+    if (!res.ok) throw new Error(`Status ${res.status}`);
+    const items = await res.json();
 
+    if (!items || items.length === 0) {
+      wishlistMenu.innerHTML = '<li><a class="dropdown-item text-muted">Your wishlist is empty</a></li>';
+      return;
+    }
 
+    wishlistMenu.innerHTML = items.map(item => `
+      <li>
+        <a class="dropdown-item" href="Product.html?id=${item._id}">
+          <div class="d-flex align-items-center">
+            <img src="${item.Images?.[0] || '/placeholder.png'}" 
+                 alt="${item.Title}" 
+                 style="width: 40px; height: 40px; object-fit: cover; margin-right: 10px;">
+            <div>
+              <div>${item.Title}</div>
+              <small class="text-success">$${item.Price}</small>
+            </div>
+          </div>
+        </a>
+      </li>
+    `).join('') + '<li><hr class="dropdown-divider"></li><li><a class="dropdown-item text-center" href="profile.html#wishlist">View All</a></li>';
 
-
+  } catch (err) {
+    console.error('Could not load wishlist:', err);
+    wishlistMenu.innerHTML = '<li><a class="dropdown-item text-danger">Error loading wishlist</a></li>';
+  }
+}
 
  </script>
 <!-- Welcome Modal -->
