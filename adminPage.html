@@ -3,65 +3,126 @@
 <head>
   <meta charset="UTF-8" />
   <title>Admin Dashboard</title>
-  <!-- Bootstrap CSS -->
+  <!-- Bootstrap CSS and Styles -->
   <link 
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" 
     rel="stylesheet"
   />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .container { max-width: 1200px; }
+    .table { 
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .table thead th { 
+      background-color: #393b3f; 
+      color: white;
+      font-weight: 500;
+      border: none;
+    }
+    .table tbody tr:hover {
+      background-color: #f8f9fa;
+    }
+    .admin-title {
+      color: #393b3f;
+      margin: 1.5rem 0;
+      font-weight: 600;
+    }
+    .nav-tabs .nav-link.active {
+      color: #393b3f;
+      font-weight: 500;
+    }
+    .btn-outline-danger {
+      border-color: #393b3f;
+      color: #393b3f;
+    }
+    .btn-outline-danger:hover {
+      background-color: #393b3f;
+      border-color: #393b3f;
+    }
+  </style>
 </head>
 <body>
-  <div class="container mt-4">
-    <h1>Admin Dashboard</h1>
-
-    <!-- Only the Reports tab is enabled -->
-    <ul class="nav nav-tabs" id="adminTabs" role="tablist">
-      <li class="nav-item" role="presentation">
-        <button 
-          class="nav-link active" 
-          id="reports-tab" 
-          data-bs-toggle="tab" 
-          data-bs-target="#reports" 
-          type="button" role="tab"
-          aria-controls="reports" 
-          aria-selected="true"
-        >
-          Reports
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-custom sticky-top mb-3">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center" href="index.html">
+        <img src="FrontEnd/Images/RuMarketplaceLogo.png" alt="RU Marketplace" class="logo-img" />
+        <span class="ms-2 fw-bold">RU-Marketplace</span>
+      </a>
+      <div class="dropdown ms-auto">
+        <button class="icon-btn dropdown-toggle" type="button" id="userIconBtn" data-bs-toggle="dropdown" aria-expanded="false">
+          <img src="FrontEnd/Images/user.png" alt="User Icon" />
+          <span id="greeting" class="greeting"></span>
         </button>
-      </li>
-    </ul>
+        <ul class="dropdown-menu dropdown-menu-end" id="userDropdownMenu"></ul>
+      </div>
+    </div>
+  </nav>
 
-    <div class="tab-content mt-3" id="adminTabsContent">
-      <!-- Reports Tab -->
-      <div 
-        class="tab-pane fade show active" 
-        id="reports" 
-        role="tabpanel" 
-        aria-labelledby="reports-tab"
-      >
-        <h3>Reported Listings</h3>
-        <table class="table table-bordered" id="reportsTable">
-          <thead>
-            <tr>
-              <th>Report ID</th>
-              <th>Reason</th>
-              <th>Created At</th>
-              <th>View Listing</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Populated by JS -->
-          </tbody>
-        </table>
+  <div class="container">
+    <h1 class="admin-title">Admin Dashboard</h1>
+
+    <!-- Reports Section -->
+    <div class="card">
+      <div class="card-body">
+        <h3 class="mb-4">Reported Listings</h3>
+        <div class="table-responsive">
+          <table class="table table-hover" id="reportsTable">
+            <thead>
+              <tr>
+                <th>Report ID</th>
+                <th>Listing Name</th>
+                <th>Reason</th>
+                <th>Created At</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- Bootstrap JS -->
-  <script 
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-  ></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
+    // Initialize components when DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
+      setupNavbar();
+      loadReports();
+    });
+
+    function setupNavbar() {
+      const userDropdownMenu = document.getElementById("userDropdownMenu");
+      const greetingEl = document.getElementById("greeting");
+      const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+      const username = localStorage.getItem("username") || "";
+
+      if (isLoggedIn && username) {
+        greetingEl.textContent = `Hello, ${username}!`;
+        userDropdownMenu.innerHTML = `
+          <li><a class="dropdown-item" href="profile.html">Profile</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" id="logoutLink" href="#">Logout</a></li>
+        `;
+        document.getElementById('logoutLink').addEventListener('click', () => {
+          localStorage.clear();
+          window.location.href = "index.html";
+        });
+      } else {
+        greetingEl.textContent = "";
+        window.location.href = "signin.html"; // Redirect non-admin users
+      }
+    }
+
     async function loadReports() {
       try {
         const res = await fetch('http://localhost:3000/api/reports');
@@ -71,51 +132,56 @@
       } catch (err) {
         console.error('Could not load reports:', err);
         document.querySelector('#reportsTable tbody').innerHTML =
-          `<tr><td colspan="4" class="text-danger">Failed to load reports.</td></tr>`;
+          `<tr><td colspan="5" class="text-danger text-center py-3">Failed to load reports.</td></tr>`;
       }
     }
 
     function renderReports(reports) {
-  const tbody = document.querySelector('#reportsTable tbody');
-  tbody.innerHTML = '';
+      const tbody = document.querySelector('#reportsTable tbody');
+      tbody.innerHTML = '';
 
-  if (!reports.length) {
-    tbody.innerHTML = `<tr><td colspan="4">No reports found.</td></tr>`;
-    return;
-  }
+      if (!reports.length) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-3">No reports found.</td></tr>`;
+        return;
+      }
 
-  reports.forEach(r => {
-    const tr = document.createElement('tr');
+      reports.forEach(r => {
+        const tr = document.createElement('tr');
 
-    const idCell = document.createElement('td');
-    idCell.textContent = r._id;
-    tr.appendChild(idCell);
+        const idCell = document.createElement('td');
+        idCell.textContent = r._id;
+        tr.appendChild(idCell);
 
-    const reasonCell = document.createElement('td');
-    reasonCell.textContent = r.reason;
-    tr.appendChild(reasonCell);
+        const nameCell = document.createElement('td');
+        nameCell.textContent = r.listingId && r.listingId.Title ? r.listingId.Title : 'Listing Removed';
+        tr.appendChild(nameCell);
 
-    const dateCell = document.createElement('td');
-    dateCell.textContent = new Date(r.createdAt).toLocaleString();
-    tr.appendChild(dateCell);
-    const viewCell = document.createElement('td');
-    const link = document.createElement('a');
+        const reasonCell = document.createElement('td');
+        reasonCell.textContent = r.reason;
+        tr.appendChild(reasonCell);
 
-    const listingId = typeof r.listingId === 'object'
-      ? r.listingId._id
-      : r.listingId;
+        const dateCell = document.createElement('td');
+        dateCell.textContent = new Date(r.createdAt).toLocaleString();
+        tr.appendChild(dateCell);
 
-    link.href = `Product.html?id=${listingId}`;
-    link.target = "_blank"; // Add this line to open in new tab
-    link.textContent = 'View';
-    link.className = 'btn btn-sm btn-outline-primary';
-    viewCell.appendChild(link);
-    tr.appendChild(viewCell);
+        const actionCell = document.createElement('td');
+        const listingId = r.listingId && r.listingId._id ? r.listingId._id : null;
 
-    tbody.appendChild(tr);
-  });
-}
-    document.addEventListener('DOMContentLoaded', loadReports);
+        if (listingId) {
+          const link = document.createElement('a');
+          link.href = `Product.html?id=${listingId}`;
+          link.target = "_blank";
+          link.textContent = 'View Listing';
+          link.className = 'btn btn-sm btn-outline-danger';
+          actionCell.appendChild(link);
+        } else {
+          actionCell.textContent = 'Listing no longer available';
+        }
+        tr.appendChild(actionCell);
+
+        tbody.appendChild(tr);
+      });
+    }
   </script>
 </body>
 </html>
