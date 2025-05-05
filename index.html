@@ -41,7 +41,8 @@
         </div>
         
       </div>
-      
+   
+
       <div class="d-flex align-items-center ms-auto me-3">
         <div class="dropdown me-3">
           <button class="icon-btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
@@ -238,7 +239,37 @@
       grid.appendChild(wrapper);
     });
   });
+  // Show welcome modal when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+  const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'), {
+    backdrop: 'static',
+    keyboard: true
+  });
+  welcomeModal.show();
+});
+
+
+
 
   </script>
+ <!-- Welcome Modal -->
+<div class="modal fade" id="welcomeModal" tabindex="-1" aria-labelledby="welcomeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center p-3">
+      <div class="modal-header border-0 flex-column">
+        <img src="FrontEnd/Images/RuMarketplaceLogo.png" alt="RU Marketplace Logo" style="height: 60px;" class="mb-2" />
+        <h5 class="modal-title w-100 fw-bold" id="welcomeModalLabel">🎓 Welcome Rutgers Students!</h5>
+      </div>
+      <div class="modal-body">
+        <p class="mb-2">Please log in using your <strong>Rutgers email</strong> to access all features of the RU-Marketplace.</p>
+      </div>
+      <div class="modal-footer justify-content-center border-0">
+        <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">Got it!</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
 </body>
 </html>
