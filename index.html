@@ -32,10 +32,16 @@
       <div class="d-flex align-items-center">
         <div class="input-group me-3">
           <input type="text" class="form-control search-input" placeholder="Search…">
-          <button class="btn btn-outline-light">Filter</button>
+          <select id="priceFilter" class="form-select form-select-sm w-auto ms-2" style="max-width: 180px;">
+            <option value="default" disabled selected>Filter</option>
+            <option value="lowToHigh">Price: Low to High</option>
+            <option value="highToLow">Price: High to Low</option>
+          </select>
+          
         </div>
+        
       </div>
-
+      
       <div class="d-flex align-items-center ms-auto me-3">
         <div class="dropdown me-3">
           <button class="icon-btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
@@ -141,16 +147,16 @@
 
       items.forEach(prod => {
         const col = document.createElement('div');
-        col.className = 'col-sm-6 col-md-4 col-lg-3 mb-4';
-        col.innerHTML = `
-          <div class="card h-100">
-            <img src="${prod.Images?.[0]||prod.image||''}"
-                 class="card-img-top"
-                 alt="${prod.Title||prod.title}" />
-            <div class="card-body">
-              <h5 class="card-title">${prod.Title||prod.title}</h5>
-              <p class="card-text">${prod.Description||prod.description}</p>
-              <p class="text-success">$${prod.Price||prod.price}</p>
+    col.className = 'col-sm-6 col-md-4 col-lg-3 mb-4';
+    col.innerHTML = `
+      <div class="card h-100 product-card" data-price="${prod.Price || prod.price}">
+        <img src="${prod.Images?.[0] || prod.image || ''}"
+             class="card-img-top"
+             alt="${prod.Title || prod.title}" />
+        <div class="card-body">
+          <h5 class="card-title">${prod.Title || prod.title}</h5>
+          <p class="card-text">${prod.Description || prod.description}</p>
+          <p class="text-success">$${prod.Price || prod.price}</p>
               ${isLoggedIn
                 ? `<button class="btn btn-success"
                     onclick="buyNow(
@@ -212,6 +218,26 @@
   }).toString();
   window.location.href = `Product.html?${q}`;
 }
+
+  document.getElementById("priceFilter").addEventListener("change", function () {
+    const sortOrder = this.value;
+    const productCards = Array.from(document.querySelectorAll(".product-card"));
+    
+    productCards.sort((a, b) => {
+      const priceA = parseFloat(a.dataset.price);
+      const priceB = parseFloat(b.dataset.price);
+      return sortOrder === "lowToHigh" ? priceA - priceB : priceB - priceA;
+    });
+
+    const grid = document.getElementById("product-grid");
+    grid.innerHTML = "";
+    productCards.forEach(card => {
+      const wrapper = document.createElement("div");
+      wrapper.className = "col-sm-6 col-md-4 col-lg-3 mb-4";
+      wrapper.appendChild(card);
+      grid.appendChild(wrapper);
+    });
+  });
 
   </script>
 </body>
