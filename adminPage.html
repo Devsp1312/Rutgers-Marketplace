@@ -106,6 +106,7 @@
       : r.listingId;
 
     link.href = `Product.html?id=${listingId}`;
+    link.target = "_blank"; // Add this line to open in new tab
     link.textContent = 'View';
     link.className = 'btn btn-sm btn-outline-primary';
     viewCell.appendChild(link);
