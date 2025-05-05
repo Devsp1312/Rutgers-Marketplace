@@ -161,21 +161,34 @@
     });
 
   async function addToWishlist() {
-    const userId    = localStorage.getItem('userId');
-    const listingId = listingIdFromQuery; // same one you pulled for report
+    const userId = localStorage.getItem('userId');
+    const params = new URLSearchParams(window.location.search);
+    const listingId = params.get('id');
 
-    if (!userId) return alert('Please sign in first.');
+    if (!userId) {
+      return alert('Please sign in first.');
+    }
+    if (!listingId) {
+      return alert('Invalid listing.');
+    }
 
-    const res = await fetch(`http://localhost:3000/api/users/${userId}/wishlist`, {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json' },
-      body: JSON.stringify({ listingId })
-    });
+    try {
+      const res = await fetch(`http://localhost:3000/api/users/${userId}/wishlist`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ listingId })
+      });
 
-    if (res.ok) alert('Added to your wishlist!');
-    else {
-      const err = await res.json();
-      alert(err.message || "Could not add");
+      const data = await res.json();
+
+      if (res.ok) {
+        alert('Added to your wishlist!');
+      } else {
+        throw new Error(data.message || 'Could not add to wishlist');
+      }
+    } catch (err) {
+      console.error('Wishlist error:', err);
+      alert(err.message || 'Could not add to wishlist');
     }
   }
   window.addToWishlist = addToWishlist;

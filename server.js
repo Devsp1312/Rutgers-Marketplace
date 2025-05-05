@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import mongoose from 'mongoose';
+const User = mongoose.model('User');
 import {
   connectToDB,
   addUser,
@@ -244,6 +246,34 @@ app.get('/api/listings/:id', async (req, res) => {
   } catch (err) {
     console.error('GET /api/listings/:id error:', err);
     res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Add to wishlist endpoint
+app.post('/api/users/:userId/wishlist', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { listingId } = req.body;
+
+    if (!userId || !listingId) {
+      return res.status(400).json({ message: 'Missing user ID or listing ID' });
+    }
+
+    // Use findByIdAndUpdate to atomically update the wishlist
+    const result = await User.findByIdAndUpdate(
+      userId,
+      { $addToSet: { Wishlist: listingId } }, // $addToSet prevents duplicates
+      { new: true }
+    );
+
+    if (!result) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({ message: 'Added to wishlist' });
+  } catch (err) {
+    console.error('Wishlist addition failed:', err);
+    res.status(500).json({ message: 'Could not add to wishlist' });
   }
 });
 
