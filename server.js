@@ -17,8 +17,8 @@ import {
   getAllReports,
   getListing,
   getUserWishlist,
-  deleteListing
-  //addToWishlist
+  deleteListing,
+  User // Add User model import
 } from './Database/db_funcs.js';
 
 dotenv.config();
@@ -152,6 +152,37 @@ app.get('/api/listings', async (req, res) => {
   } catch (err) {
     console.error(' GET /api/listings failed:', err);
     res.status(500).json({ message: 'Could not fetch listings' });
+  }
+});
+
+// Add to wishlist endpoint
+app.post('/api/users/:userId/wishlist', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { listingId } = req.body;
+    
+    if (!listingId) {
+      return res.status(400).json({ message: 'Missing listingId in request body' });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Check if item is already in wishlist
+    if (user.Wishlist.includes(listingId)) {
+      return res.status(400).json({ message: 'Item already in wishlist' });
+    }
+
+    // Add to wishlist
+    user.Wishlist.push(listingId);
+    await user.save();
+
+    res.status(200).json({ message: 'Added to wishlist successfully' });
+  } catch (err) {
+    console.error('POST /api/users/:userId/wishlist failed:', err);
+    res.status(500).json({ message: 'Could not add to wishlist' });
   }
 });
 

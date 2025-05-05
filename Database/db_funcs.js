@@ -2,30 +2,11 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import mongoose from 'mongoose';
-//const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const DB_URI = `mongodb+srv://${process.env.MONGO_DB_USER}:${process.env.MONGO_DB_PASSWORD}@ru-marketplace.2zzoe.mongodb.net/marketplace?retryWrites=true&w=majority&appName=ru-marketplace`;
-// const DB_URI = `mongodb+srv://${process.env.MONGO_DB_USER}:${process.env.MONGO_DB_PASSWORD}@ru-marketplace.2zzoe.mongodb.net/marketplace?retryWrites=true&w=majority&tls=true&ssl=true&tlsAllowInvalidCertificates=true&tlsAllowInvalidHostnames=true`;
 
-
-export const connectToDB = async () => {
-    return new Promise((resolve, reject) => {
-      mongoose.connect(DB_URI);
-  
-      const db = mongoose.connection;
-      db.on('error', (error) => {
-        console.error('Connection error:', error);
-        reject(error);
-      });
-  
-      db.once('open', () => {
-        console.log('Connected to Database');
-        resolve(true);
-      });
-    });
-  }
-
+// Define schemas
 const ListingSchema = new Schema({
     Title: {
         type: String,
@@ -43,7 +24,7 @@ const ListingSchema = new Schema({
         type: String,
         required: true
     },
-    Images: {  // Array of image URLs but this is subjected to change depending on how we decide to store images
+    Images: {
         type: [String],
         required: true
     }
@@ -68,25 +49,44 @@ const UserSchema = new Schema({
         required: false
     },
     Listings: {
-        type: [String], // Array of Listing IDs
+        type: [String],
         required: false
     },
-    
     Wishlist: { 
         type: [String], 
-        required: false, default: [] 
-      }
+        required: false,
+        default: [] 
+    }
 }, {timestamps: true});
 
-
 const ReportSchema = new Schema({
-  listingId:  { type: Schema.Types.ObjectId, ref: 'Listing', required: true },
-  reporterId: { type: Schema.Types.ObjectId, ref: 'User',    required: true },
-  reason:     { type: String, required: true },
-  details:    { type: String }        // for “Other” box
+    listingId: { type: Schema.Types.ObjectId, ref: 'Listing', required: true },
+    reporterId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    reason: { type: String, required: true },
+    details: { type: String }
 }, { timestamps: true });
 
-const Report = mongoose.model('Report', ReportSchema);
+// Create and export models
+export const Report = mongoose.model('Report', ReportSchema);
+export const Listing = mongoose.model('Listing', ListingSchema);
+export const User = mongoose.model('User', UserSchema);
+
+export const connectToDB = async () => {
+    return new Promise((resolve, reject) => {
+      mongoose.connect(DB_URI);
+  
+      const db = mongoose.connection;
+      db.on('error', (error) => {
+        console.error('Connection error:', error);
+        reject(error);
+      });
+  
+      db.once('open', () => {
+        console.log('Connected to Database');
+        resolve(true);
+      });
+    });
+  }
 
 export async function addReport(listingId, reporterId, reason, details = '') {
   const rpt = new Report({ listingId, reporterId, reason, details });
@@ -101,8 +101,6 @@ export async function getAllReports() {
     .populate('listingId', 'Title')    // bring back the title
     .populate('reporterId', 'Name Email');
 }
-const Listing = mongoose.model('Listing', ListingSchema);
-const User = mongoose.model('User', UserSchema);
 
 export const addUser = async (name, email, reviews = [], listings = []) => {
     const newUser = new User({
@@ -205,22 +203,6 @@ async function changeListingImages(listing_id, newImages) {
     console.log(`Images changed for listing: ${listing_id}`);
 }
 
-
-
-// module.exports = {
-//     connectToDB,
-//     addUser,
-//     checkUser,
-//     getUser,
-//     addListing,
-//     getListing,
-//     addReview,
-//     changeListingPrice,
-//     changeListingDescription,
-//     changeListingTitle,
-//     changeListingImages
-// }
-
 export async function getAllListings() {
     try {
       return await Listing.find();
@@ -238,9 +220,6 @@ export async function getAllListings() {
       throw err;
     }
   }
-
-//import User from './models/User.js';
-//import Listing from './models/Listing.js';
 
 export async function getUserWishlist(userId) {
   try {
