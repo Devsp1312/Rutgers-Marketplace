@@ -295,10 +295,10 @@ app.post('/api/google-login', async (req, res) => {
 
     const payload = ticket.getPayload();
     const { email, name, sub: googleId } = payload;
-    console.log('✔ Verified Google Sign-In for:', email);
+    console.log(' Verified Google Sign-In for:', email);
     res.status(200).json({ email, name, googleId });
   } catch (err) {
-    console.error('❌ Google login failed:', err);
+    console.error(' Google login failed:', err);
     res.status(401).json({ message: 'Invalid Google token' });
   }
 });
