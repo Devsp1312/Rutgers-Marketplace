@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+
 import {
   connectToDB,
   addUser,
@@ -278,9 +279,36 @@ app.get('/api/listings/:id', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+import { OAuth2Client } from 'google-auth-library';
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+app.post('/api/google-login', async (req, res) => {
+  const { token } = req.body;
+  if (!token) return res.status(400).json({ message: 'Missing token' });
+
+  try {
+    const ticket = await googleClient.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID
+    });
+
+    const payload = ticket.getPayload();
+    const { email, name, sub: googleId } = payload;
+    console.log('✔ Verified Google Sign-In for:', email);
+    res.status(200).json({ email, name, googleId });
+  } catch (err) {
+    console.error('❌ Google login failed:', err);
+    res.status(401).json({ message: 'Invalid Google token' });
+  }
+});
 
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(process.env.PORT || 3000, () => {
+    console.log(`Server running on port ${process.env.PORT || 3000}`);
+  });
+}
+
+export default app;
