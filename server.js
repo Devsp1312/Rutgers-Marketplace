@@ -19,7 +19,8 @@ import {
   getListing,
   getUserWishlist,
   deleteListing,
-  User // Add User model import
+  User, // Add User model import
+  Report // Add Report model import
 } from './Database/db_funcs.js';
 
 dotenv.config();
@@ -329,6 +330,26 @@ app.post('/api/google-login', async (req, res) => {
   }
 });
 
+// Add detailed logging to debug the delete report route
+app.delete('/api/reports/:id', async (req, res) => {
+  try {
+    const reportId = req.params.id;
+    console.log(`Attempting to delete report with ID: ${reportId}`);
+
+    const deletedReport = await Report.findByIdAndDelete(reportId);
+
+    if (!deletedReport) {
+      console.error(`Report with ID ${reportId} not found.`);
+      return res.status(404).send({ error: 'Report not found' });
+    }
+
+    console.log(`Report with ID ${reportId} deleted successfully.`);
+    res.status(200).send({ message: 'Report deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting report:', err);
+    res.status(500).send({ error: 'Failed to delete report' });
+  }
+});
 
 const PORT = process.env.PORT || 3000;
 if (process.env.NODE_ENV !== 'test') {

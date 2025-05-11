@@ -1,4 +1,3 @@
-\Documents\VS code\Rutgers-Marketplace\adminPage.html -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -135,19 +134,43 @@
         const listingId = r.listingId && r.listingId._id ? r.listingId._id : null;
 
         if (listingId) {
-          const link = document.createElement('a');
-          link.href = `Product.html?id=${listingId}`;
-          link.target = "_blank";
-          link.textContent = 'View Listing';
-          link.className = 'btn btn-sm btn-outline-danger';
-          actionCell.appendChild(link);
+          const viewLink = document.createElement('a');
+          viewLink.href = `Product.html?id=${listingId}`;
+          viewLink.target = "_blank";
+          viewLink.textContent = 'View Listing';
+          viewLink.className = 'btn btn-sm btn-outline-danger me-2';
+          actionCell.appendChild(viewLink);
         } else {
           actionCell.textContent = 'Listing no longer available';
         }
-        tr.appendChild(actionCell);
 
+        // Add Delete Button
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.className = 'btn btn-sm btn-danger';
+        deleteBtn.addEventListener('click', () => deleteReport(r._id));
+        actionCell.appendChild(deleteBtn);
+
+        tr.appendChild(actionCell);
         tbody.appendChild(tr);
       });
+    }
+
+    async function deleteReport(reportId) {
+      if (!confirm('Are you sure you want to delete this report?')) return;
+
+      try {
+        const res = await fetch(`http://localhost:3000/api/reports/${reportId}`, {
+          method: 'DELETE',
+        });
+
+        if (!res.ok) throw new Error(`Error: ${res.status}`);
+        alert('Report deleted successfully.');
+        loadReports(); // Reload the reports after deletion
+      } catch (err) {
+        console.error('Could not delete report:', err);
+        alert('Failed to delete the report. Please try again.');
+      }
     }
   </script>
 </body>
