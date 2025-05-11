@@ -35,7 +35,7 @@
           id="product-image" 
           src="" 
           alt="Product Image" 
-          class="product-img"
+          class="product-img img-fluid rounded"
         />
       </div>
 
@@ -61,18 +61,24 @@
             Ask questions, negotiate price, or set up a meetup around campus.
           </small>
         </div>
-        <button class="btn btn-secondary message-btn" onclick="messageSeller()">
-          Message Seller
-        </button>
-
-        <!-- Schedule Meeting Button -->
-        <button class="btn btn-primary schedule-btn" onclick="scheduleMeeting()">
-          Schedule Meeting
-        </button>
-        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#reportModal">Report Listing</button>
-        <button class="btn btn-warning" onclick="addToWishlist()">
-          Add to Wishlist
-        </button>
+        <div class="d-flex flex-wrap">
+          <button class="btn btn-secondary message-btn" onclick="messageSeller()">
+            <i class="bi bi-chat"></i> Message Seller
+          </button>
+          <button class="btn btn-primary schedule-btn" onclick="scheduleMeeting()">
+            <i class="bi bi-calendar"></i> Schedule Meeting
+          </button>
+          <div class="report-btn" data-bs-toggle="modal" data-bs-target="#reportModal">
+            <em>
+              <i></i><i></i><i></i><i></i><i></i><i></i>
+            </em>
+            <span>Report Listing</span>
+          </div>
+          <a class="bt more-bt" href="javascript:void(0)" onclick="addToWishlist()">
+            <span class="fl"></span><span class="sfl"></span><span class="cross"></span><i></i>
+            <p>Add to Wishlist</p>
+          </a>
+        </div>
       </div>
     </div>
   </div>

@@ -1,6 +1,6 @@
 /* Page Background */
 body {
-  background-color: #f5f5f5;
+  background-color: #f8f9fa;
   margin: 0;
   padding: 0;
 }
@@ -12,11 +12,11 @@ body {
 
 /* Product Container */
 .product-card {
-  background-color: #fff;
+  background: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   margin-top: 3rem;
-  padding: 2rem;
+  padding: 20px;
 }
 
 .product-img {
@@ -28,16 +28,15 @@ body {
 }
 
 .product-title {
-  font-size: 1.6rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
 .price {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   color: #28a745;
-  font-weight: bold;
-  margin: 0.3rem 0 1rem 0;
+  margin-bottom: 15px;
 }
 
 .condition {
@@ -48,9 +47,12 @@ body {
 
 /* Additional spacing for buttons */
 .message-btn, 
-.schedule-btn {
+.schedule-btn, 
+.btn-danger, 
+.btn-warning {
   width: 100%;
   margin-bottom: 0.5rem;
+  margin-right: 10px;
 }
 
 /* Media query for smaller devices */
@@ -58,4 +60,213 @@ body {
   .product-card {
     padding: 1rem;
   }
+}
+
+.modal-content {
+  border-radius: 8px;
+}
+
+/* Ensure both buttons have the same shape and size */
+.bt, .report-btn {
+  border-radius: 1.4em;
+  width: 11.3em;
+  height: 2.8em;
+  font-size: 27px;
+  line-height: 2.85em;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  margin: 0.5rem 0.5rem 0.5rem 0; /* Add spacing between buttons */
+  display: inline-block; /* Ensure buttons are aligned horizontally */
+  vertical-align: top; /* Align buttons to the top */
+}
+
+/* Adjust spacing to prevent overlap */
+.bt, .report-btn {
+  margin: 0.5rem 0.5rem 0.5rem 0;
+}
+
+.bt span, .report-btn span {
+  display: block;
+  position: relative;
+}
+
+.bt:hover, .report-btn:hover {
+  transform: scale(1.05);
+}
+
+/* Add styles for the new Add to Wishlist button */
+.bt {
+  width: 11.3em;
+  height: 2.8em;
+  font-size: 27px;
+  line-height: 2.85em;
+  cursor: pointer;
+  position: relative;
+  font-family: "Roboto";
+  text-transform: uppercase;
+  color: #503af6;
+  letter-spacing: 0.5px;
+  user-select: none;
+  outline: none;
+  text-decoration: none;
+  text-align: center;
+}
+
+.more-bt {
+  border-right: 2px solid #503af6;
+  border-bottom: 2px solid #503af6;
+  padding: 17px 29px 15px 31px;
+  border-color: #503af6;
+}
+
+.more-bt p {
+  font-size: 14px;
+}
+
+.more-bt:before {
+  left: 0;
+  bottom: 0;
+  height: calc(100% - 17px);
+  width: 2px;
+  content: " ";
+  display: block;
+  background: #503af6;
+  position: absolute;
+  transition: 0.5s;
+  z-index: 10;
+}
+
+.more-bt:after {
+  top: 0;
+  right: 0;
+  width: calc(100% - 17px);
+  height: 2px;
+  content: " ";
+  display: block;
+  background: #503af6;
+  position: absolute;
+  transition: 0.5s;
+  z-index: 10;
+}
+
+.more-bt .fl, .more-bt .sfl {
+  position: absolute;
+  right: 0;
+  height: 100%;
+  width: 0;
+  z-index: 2;
+  background: #503af6;
+  top: 0;
+  transition: 0.5s;
+  transition-delay: 0.1s;
+}
+
+.more-bt .sfl {
+  z-index: 1;
+  background: #4431D1;
+  transition: 0.7s;
+}
+
+.more-bt .cross {
+  position: absolute;
+  z-index: 15;
+  width: 18px;
+  height: 18px;
+  top: calc(50% - 8px);
+  left: calc(50% - 8px);
+}
+
+.more-bt .cross:before, .more-bt .cross:after {
+  content: " ";
+  background: #fff;
+  display: block;
+  position: absolute;
+  opacity: 0;
+  transition-duration: 0.3s;
+  transition-delay: 0s;
+  transition-timing-function: cubic-bezier(0.86, 0, 0.07, 1);
+}
+
+.more-bt .cross:before {
+  width: 100%;
+  height: 2px;
+  top: 8px;
+  left: 0px;
+  transform: translateX(50px) scaleX(0);
+}
+
+.more-bt .cross:after {
+  width: 2px;
+  height: 100%;
+  left: 8px;
+  top: 0;
+  transform: translateY(20px) scaleY(0);
+  transition-duration: 0.4s;
+}
+
+.more-bt:hover .cross:after, .more-bt:hover .cross:before {
+  transform: none;
+  opacity: 1;
+  transition-delay: 0.2s;
+}
+
+.more-bt:hover .fl, .more-bt:hover .sfl {
+  width: 100%;
+  transition-delay: 0s;
+}
+
+.more-bt:hover:before {
+  height: 100%;
+}
+
+/* Add styles for the new Report Listing button */
+.report-btn {
+  background-color: #1a2857;
+  color: #fff;
+}
+
+.report-btn:hover em {
+  transform: rotate(-8deg) translateY(-81%);
+  transform-origin: left top;
+}
+
+.report-btn em {
+  position: absolute;
+  width: 12em;
+  height: 6em;
+  background-color: #ff002e;
+  left: 0;
+  top: 3.8em;
+  transition: all 0.8s cubic-bezier(0.39, 0.58, 0.57, 1);
+}
+
+.report-btn em i {
+  float: left;
+  position: relative;
+  overflow: hidden;
+  width: 2em;
+  height: 1em;
+  margin-top: -0.5em;
+}
+
+.report-btn em i:after,
+.report-btn em i:before {
+  content: '';
+  float: left;
+  height: 100%;
+  width: 50%;
+  border-radius: 50%;
+}
+
+.report-btn em i:before {
+  background-color: #ff002e;
+}
+
+.report-btn em i:after {
+  background-color: #1a2857;
 }
