@@ -1,6 +1,6 @@
 /* Page Background */
 body {
-  background-color: #f8f9fa;
+  background-color: #e1dfd2;
   margin: 0;
   padding: 0;
 }
@@ -53,6 +53,64 @@ body {
   width: 100%;
   margin-bottom: 0.5rem;
   margin-right: 10px;
+}
+
+/* Add animation for Message Seller button */
+.message-btn {
+  position: relative;
+  display: inline-block;
+  margin: 20px;
+  background-color: inherit; /* Keep original color */
+  color: inherit; /* Keep original text color */
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  text-align: center;
+  text-decoration: none;
+  padding: 10px 20px; /* Adjust padding to match original size */
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  text-shadow: 0px 1px 0px #000;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 10px 0 rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  transition: all 0.2s ease;
+}
+
+.message-btn:active {
+  top: 5px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -3px 0 rgba(0, 0, 0, 0.2);
+}
+
+.message-btn:after {
+  content: "";
+  height: 100%;
+  width: 100%;
+  padding: 4px;
+  position: absolute;
+  bottom: -10px;
+  left: -4px;
+  z-index: -1;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}
+
+/* Add new animation for Schedule Meeting button */
+.schedule-btn {
+  border: 2px solid #007bff; /* Blue border */
+  color: #ffffff;
+  background: linear-gradient(45deg, #007bff 50%, transparent 50%);
+  background-size: 400%;
+  background-position: 100%;
+  transition: background 300ms ease-in-out, box-shadow 150ms ease-in-out;
+  box-shadow: 0 0 40px 40px #007bff inset, 0 0 0 0 #007bff;
+}
+
+.schedule-btn:hover {
+  background-position: 0;
+  box-shadow: 0 0 10px 0 #007bff inset, 0 0 10px 4px #007bff;
+}
+
+@keyframes glowing {
+  /* Remove keyframes */
 }
 
 /* Media query for smaller devices */
