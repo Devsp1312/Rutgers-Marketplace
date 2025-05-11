@@ -1,7 +1,5 @@
-// scheduleMeeting.js
-
+//scheduleMeeting.js This file contains the function to schedule a meeting using Google Calendar and auto populate the event details based on the product listing.
 export function scheduleMeeting() {
-  // Get listing details from URL params
   const params = new URLSearchParams(window.location.search);
   const title = params.get('title') || 'Product Meetup';
   const description = params.get('description') || '';

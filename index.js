@@ -35,6 +35,7 @@ function updateUserMenu() {
 }
 
 // Initialize GSI and then render user menu
+// This function is called when the page loads and when the user logs in and logs out i have the API key but 
 window.onload = () => {
   google.accounts.id.initialize({
     client_id: '922908217557-2osq9upebgcpke4jl560hqbl77eodu5i.apps.googleusercontent.com',
@@ -133,7 +134,7 @@ async function HandleAuth(response) {
   }
 }
 
-// Buy-Now redirect
+// Buy-Now redirect to the product page
 function buyNow(id, title, description, price, image) {
   const q = new URLSearchParams({
     id, title, description, price, image

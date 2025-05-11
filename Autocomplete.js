@@ -5,7 +5,6 @@ export default class Autocomplete {
       console.error(`Input element with selector "${inputSelector}" not found`);
       return;
     }
-
     // Clean up any existing dropdown from previous instance
     const existingDropdown = this.input.closest('.input-group').querySelector('.autocomplete-dropdown');
     if (existingDropdown) {
@@ -32,7 +31,6 @@ export default class Autocomplete {
     this.dropdown.style.left = '0';
     this.dropdown.style.zIndex = '1000';
     this.inputContainer.appendChild(this.dropdown);
-
     // Remove any existing event listeners
     const newInput = this.input.cloneNode(true);
     this.input.parentNode.replaceChild(newInput, this.input);
@@ -44,14 +42,13 @@ export default class Autocomplete {
     }
   }
 
+  // Handle both Title and title properties
   handleInput() {
     const searchTerm = this.input.value.toLowerCase();
     const filtered = this.products.filter(p => {
-      // Handle both Title and title properties
       const productTitle = (p.Title || p.title || '').toLowerCase();
       return productTitle.includes(searchTerm);
     });
-
     // Clear old suggestions
     this.dropdown.innerHTML = '';
 
@@ -70,7 +67,6 @@ export default class Autocomplete {
       // Handle both Title and title properties
       const productTitle = product.Title || product.title;
       const matchIndex = productTitle.toLowerCase().indexOf(searchTerm);
-      
       if (matchIndex !== -1) {
         const before = productTitle.slice(0, matchIndex);
         const match = productTitle.slice(matchIndex, matchIndex + searchTerm.length);
@@ -79,7 +75,6 @@ export default class Autocomplete {
       } else {
         a.textContent = productTitle;
       }
-
       // On suggestion click
       a.addEventListener('mousedown', (e) => {
         e.preventDefault();
@@ -89,16 +84,15 @@ export default class Autocomplete {
         // Navigate to product details page
         this.openProductDetails(product);
       });
-
       this.dropdown.appendChild(a);
     });
-
     // Show dropdown
     this.dropdown.style.display = 'block';
   }
 
   handleBlur() {
-    // Delay hiding to allow clicks
+    // Delay hiding to allow clicks on suggestions
+    // This is a workaround for the issue where the dropdown closes before the click event is registered
     setTimeout(() => {
       this.dropdown.style.display = 'none';
     }, 150);
@@ -106,10 +100,10 @@ export default class Autocomplete {
 
   openProductDetails(product) {
     // We only need to pass the ID since Product.html fetches the full details
+    // and displays them. This is more efficient than passing the entire product object.
     const query = new URLSearchParams({
-      id: product._id || product.id  // Handle both _id and id properties
+      id: product._id || product.id  
     }).toString();
-    
     window.location.href = `Product.html?${query}`;
   }
 }
