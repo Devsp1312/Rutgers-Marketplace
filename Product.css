@@ -115,13 +115,20 @@ body {
   outline: none;
   text-decoration: none;
   text-align: center;
+  background-color: #ffc107; /* Dark yellow for Add to Wishlist */
+  color: #000;
+  border: none;
+}
+
+.bt:hover {
+  background-color: #e0a800; /* Darker yellow for hover */
 }
 
 .more-bt {
-  border-right: 2px solid #503af6;
-  border-bottom: 2px solid #503af6;
+  border-right: 2px solid #ffc107;
+  border-bottom: 2px solid #ffc107;
   padding: 17px 29px 15px 31px;
-  border-color: #503af6;
+  border-color: #ffc107;
 }
 
 .more-bt p {
@@ -135,7 +142,7 @@ body {
   width: 2px;
   content: " ";
   display: block;
-  background: #503af6;
+  background: #ffc107;
   position: absolute;
   transition: 0.5s;
   z-index: 10;
@@ -148,7 +155,7 @@ body {
   height: 2px;
   content: " ";
   display: block;
-  background: #503af6;
+  background: #ffc107;
   position: absolute;
   transition: 0.5s;
   z-index: 10;
@@ -226,8 +233,12 @@ body {
 
 /* Add styles for the new Report Listing button */
 .report-btn {
-  background-color: #1a2857;
+  background-color: #28a745; /* Green for Report Listing */
   color: #fff;
+}
+
+.report-btn:hover {
+  background-color: #218838; /* Darker green for hover */
 }
 
 .report-btn:hover em {
