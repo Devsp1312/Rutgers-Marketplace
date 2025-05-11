@@ -68,8 +68,8 @@ Contributions are welcome! Please follow these steps:
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under Please don't copy License. 
 
 ## Contact
 
-For any inquiries or feedback, please contact [your-email@example.com].
+For any inquiries or feedback, please contact [dsp185@scarletmail.rutgers.edu].
