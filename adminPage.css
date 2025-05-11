@@ -1,0 +1,42 @@
+.container {
+  max-width: 1200px;
+}
+
+.table {
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table thead th {
+  background-color: #393b3f;
+  color: white;
+  font-weight: 500;
+  border: none;
+}
+
+.table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.admin-title {
+  color: #393b3f;
+  margin: 1.5rem 0;
+  font-weight: 600;
+}
+
+.nav-tabs .nav-link.active {
+  color: #393b3f;
+  font-weight: 500;
+}
+
+.btn-outline-danger {
+  border-color: #393b3f;
+  color: #393b3f;
+}
+
+.btn-outline-danger:hover {
+  background-color: #393b3f;
+  border-color: #393b3f;
+}

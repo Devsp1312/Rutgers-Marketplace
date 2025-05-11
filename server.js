@@ -187,6 +187,32 @@ app.post('/api/users/:userId/wishlist', async (req, res) => {
   }
 });
 
+// DELETE endpoint to remove an item from the wishlist
+app.delete('/api/users/:userId/wishlist/:itemId', async (req, res) => {
+  const { userId, itemId } = req.params;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Remove the item from the wishlist
+    const index = user.Wishlist.indexOf(itemId);
+    if (index === -1) {
+      return res.status(404).json({ message: 'Item not found in wishlist' });
+    }
+
+    user.Wishlist.splice(index, 1);
+    await user.save();
+
+    res.status(200).json({ message: 'Item removed from wishlist' });
+  } catch (err) {
+    console.error('DELETE /api/users/:userId/wishlist/:itemId failed:', err);
+    res.status(500).json({ message: 'Could not remove item from wishlist' });
+  }
+});
+
 //import { getListingsByUser } from './Database/db_funcs.js';
 
 // GET all listings for one user

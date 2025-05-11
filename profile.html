@@ -374,83 +374,82 @@ async function loadActiveListings() {
   }
 
   async function loadWishlist() {
-  const userId = localStorage.getItem('userId');
-  const container = document.getElementById('wishlistContainer');
-  container.innerHTML = ''; 
+      const userId = localStorage.getItem('userId');
+      const container = document.getElementById('wishlistContainer');
+      container.innerHTML = ''; 
 
-  if (!userId) {
-    container.innerHTML = '<p class="text-muted">Log in to see your wishlist.</p>';
-    return;
-  }
-
-  try {
-    // Add a timestamp to prevent caching
-    const res = await fetch(`http://localhost:3000/api/users/${userId}/wishlist?t=${Date.now()}`);
-    
-    if (!res.ok) {
-      console.error(`API error: ${res.status}`);
-      throw new Error(`Status ${res.status}`);
-    }
-    
-    const items = await res.json();
-    console.log('Wishlist API response:', items); // Debug the actual data structure
-
-    if (!items || items.length === 0) {
-      container.innerHTML = '<p class="text-muted">Your wishlist is empty.</p>';
-      return;
-    }
-
-    // Create a div for the row if it doesn't exist
-    const rowDiv = document.createElement('div');
-    rowDiv.className = 'row';
-    container.appendChild(rowDiv);
-
-    items.forEach(item => {
-      console.log('Processing item:', item); // Debug each item
-      
-      // Deeply check for field names with fallbacks
-      const title = item.Title || item.title || 'Untitled';
-      const price = item.Price || item.price || 0;
-      
-      // Check for images in different possible formats
-      let image = 'https://via.placeholder.com/150';
-      if (item.Images && item.Images.length > 0) {
-        image = item.Images[0];
-      } else if (item.images && item.images.length > 0) {
-        image = item.images[0];
-      } else if (item.image) {
-        image = item.image;
+      if (!userId) {
+        container.innerHTML = '<p class="text-muted">Log in to see your wishlist.</p>';
+        return;
       }
-      
-      const itemId = item._id || item.id;
-      
-      const col = document.createElement('div');
-      col.className = 'col-md-4 mb-3';
-      col.innerHTML = `
-        <div class="card h-100">
-          <img 
-            src="${image}" 
-            class="card-img-top" 
-            style="object-fit:cover; height:150px;" 
-            alt="${title}" 
-            onerror="this.src='https://via.placeholder.com/150'; this.onerror=null;" 
-          />
-          <div class="card-body p-2">
-            <h6 class="card-title mb-1">${title}</h6>
-            <p class="mb-1 text-success">${price}</p>
-            <a href="Product.html?id=${itemId}" 
-               class="btn btn-sm btn-outline-primary w-100">
-              View
-            </a>
-          </div>
-        </div>`;
-      rowDiv.appendChild(col);
-    });
-  } catch (err) {
-    console.error('Couldn\'t load wishlist', err);
-    container.innerHTML = '<p class="text-danger">Failed to load wishlist: ' + err.message + '</p>';
-  }
-}
+
+      try {
+        const res = await fetch(`http://localhost:3000/api/users/${userId}/wishlist?t=${Date.now()}`);
+        if (!res.ok) throw new Error(`Status ${res.status}`);
+        const items = await res.json();
+
+        if (!items || items.length === 0) {
+          container.innerHTML = '<p class="text-muted">Your wishlist is empty.</p>';
+          return;
+        }
+
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'row';
+        container.appendChild(rowDiv);
+
+        items.forEach(item => {
+          const col = document.createElement('div');
+          col.className = 'col-md-4 mb-3';
+          col.innerHTML = `
+            <div class="card h-100">
+              <img 
+                src="${item.Images?.[0] || 'https://via.placeholder.com/150'}" 
+                class="card-img-top" 
+                style="object-fit:cover; height:150px;" 
+                alt="${item.Title}" 
+                onerror="this.src='https://via.placeholder.com/150'; this.onerror=null;" 
+              />
+              <div class="card-body p-2">
+                <h6 class="card-title mb-1">${item.Title}</h6>
+                <p class="mb-1 text-success">$${item.Price}</p>
+                <a href="Product.html?id=${item._id}" 
+                   class="btn btn-sm btn-outline-primary w-100 mb-2">
+                  View
+                </a>
+                <button class="btn btn-sm btn-outline-danger w-100" onclick="removeFromWishlist('${item._id}')">
+                  Remove
+                </button>
+              </div>
+            </div>`;
+          rowDiv.appendChild(col);
+        });
+      } catch (err) {
+        console.error('Couldn\'t load wishlist', err);
+        container.innerHTML = '<p class="text-danger">Failed to load wishlist: ' + err.message + '</p>';
+      }
+    }
+
+    async function removeFromWishlist(itemId) {
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        alert('You must be logged in to remove items from your wishlist.');
+        return;
+      }
+
+      try {
+        const res = await fetch(`http://localhost:3000/api/users/${userId}/wishlist/${itemId}`, {
+          method: 'DELETE',
+        });
+
+        if (!res.ok) throw new Error(`Status ${res.status}`);
+
+        alert('Item removed from wishlist.');
+        loadWishlist(); // Refresh the wishlist
+      } catch (err) {
+        console.error('Couldn\'t remove item from wishlist', err);
+        alert('Failed to remove item from wishlist.');
+      }
+    }
     
     function setupEditProfileForm() {
       const editForm = document.getElementById("editProfileForm");
